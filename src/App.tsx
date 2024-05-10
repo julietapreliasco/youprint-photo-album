@@ -19,6 +19,7 @@ import photoSet from "./data/photos";
 import PhotoFrame from "./components/PhotoFrame";
 import SortablePhotoFrame from "./components/SortablePhotoFrame";
 import { SortablePhotoProps } from "./types";
+import "./index.css"
 
 export default function App() {
   const [photos, setPhotos] = React.useState(
@@ -67,7 +68,7 @@ export default function App() {
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={photos}>
-        <div style={{margin:"30px"}}>
+        <div>
           <PhotoAlbum
             photos={photos}
             layout="columns"
