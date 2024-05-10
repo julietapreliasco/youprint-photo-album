@@ -28,6 +28,7 @@ export default function App() {
       id: photo.key || photo.src,
     })),
   );
+  console.log(photos)
   const renderedPhotos = React.useRef<{ [key: string]: SortablePhotoProps }>({});
   const [activeId, setActiveId] = React.useState<UniqueIdentifier>();
   const activeIndex = activeId ? photos.findIndex((photo) => photo.id === activeId) : undefined;
@@ -60,6 +61,7 @@ export default function App() {
     return <SortablePhotoFrame activeIndex={activeIndex} {...props} />;
   };
 
+
   return (
     <DndContext
       sensors={sensors}
@@ -68,13 +70,11 @@ export default function App() {
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={photos}>
-        <div>
+        <div className="md:w-[80%] m-auto">
           <PhotoAlbum
             photos={photos}
-            layout="columns"
-            columns={2}
-            spacing={20}
-            padding={10}
+            layout="rows"
+            rowConstraints={{minPhotos: 2, maxPhotos: 3}}
             renderPhoto={renderPhoto}
           />
         </div>

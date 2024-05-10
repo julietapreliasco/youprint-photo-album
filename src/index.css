@@ -4,8 +4,26 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: "Poppins", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.react-photo-album--row {
+  justify-content: space-around !important;
+}
+
+.react-photo-album--photo {
+  border-radius: 3%;
+  object-fit: cover;
+  box-shadow: 10px 10px 5px -4px rgba(0,0,0,0.05);
+  -webkit-box-shadow: 10px 10px 5px -4px rgba(0,0,0,0.05);
+  -moz-box-shadow: 10px 10px 5px -4px rgba(0,0,0,0.05);
+}
+
+.photo-frame{
+  padding: 0.5%
+}
+.react-photo-album--photo:hover {
+  transform: scale(1.02);
 }

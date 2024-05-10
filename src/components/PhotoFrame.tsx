@@ -13,27 +13,19 @@ const PhotoFrame = React.memo(
         ref={ref}
         style={{
         width: overlay ? `calc(100% - ${2 * layoutOptions.padding}px)` : style.width,
-        padding: style.padding,
-        marginBottom: style.marginBottom,
         }}
         className={clsx("photo-frame", {
-          overlay: overlay,
-          active: active,
-          insertBefore: insertPosition === "before",
-          insertAfter: insertPosition === "after",
+          "overlay": overlay,
+          "active": active,
+          "insertBefore": insertPosition === "before",
+          "insertAfter": insertPosition === "after",
         })}
         {...attributes}
         {...listeners}
       >
         <img
           alt={alt}
-          style={{
-            ...style,
-            width: "100%",
-            padding: 0,
-            marginBottom: 0,
-            objectFit: "cover"
-          }}
+          className="w-full object-cover rounded-xl"
           {...restImageProps}
         />
       </div>
