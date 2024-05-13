@@ -22,7 +22,8 @@ body {
 }
 
 .photo-frame{
-  padding: 0.5%
+  padding: 0.5%;
+  align-self: center;
 }
 .react-photo-album--photo:hover {
   transform: scale(1.02);
