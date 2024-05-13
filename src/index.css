@@ -25,6 +25,8 @@ body {
   padding: 0.5%;
   align-self: center;
 }
+
 .react-photo-album--photo:hover {
+  opacity: 0.8;
   transform: scale(1.02);
 }
