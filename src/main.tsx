@@ -7,7 +7,7 @@ import App from "./App";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
    <Header />
-    <main className="m-auto p-5 md:p-10 bg-slate-50">
+    <main className="m-auto p-10 bg-slate-50">
       <App />
     </main>
   </React.StrictMode>,
