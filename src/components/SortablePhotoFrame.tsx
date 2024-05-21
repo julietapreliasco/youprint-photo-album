@@ -5,6 +5,7 @@ import { useSortable } from '@dnd-kit/sortable';
 
 interface SortablePhoto extends Photo {
   id: UniqueIdentifier;
+  isCover?: boolean;
 }
 
 type SortablePhotoProps = RenderPhotoProps<SortablePhoto>;
@@ -20,6 +21,7 @@ function SortablePhotoFrame(
     <PhotoFrame
       ref={setNodeRef}
       active={isDragging}
+      isCover={photo.isCover}
       insertPosition={
         activeIndex !== undefined && over?.id === photo.id && !isDragging
           ? index > activeIndex

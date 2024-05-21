@@ -11,6 +11,12 @@ export type PhotoFrameProps = SortablePhotoProps & {
   insertPosition?: 'before' | 'after';
   attributes?: Partial<React.HTMLAttributes<HTMLDivElement>>;
   listeners?: Partial<React.HTMLAttributes<HTMLDivElement>>;
+  isCover?: boolean
 };
 
 export type SortablePhotoProps = RenderPhotoProps<SortablePhoto>;
+
+export interface ExtendedPhoto extends Photo {
+  id: string;
+  isCover: boolean;
+}
