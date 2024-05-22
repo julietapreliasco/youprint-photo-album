@@ -33,6 +33,7 @@ export default function App() {
       ...photo,
       id: photo.key || photo.src,
       isCover: index === 0,
+      number: index
     })),
   );
 
@@ -66,6 +67,7 @@ export default function App() {
     return photos.map((photo, index) => ({
       ...photo,
       isCover: index === 0,
+      number: index
     }));
   };
 

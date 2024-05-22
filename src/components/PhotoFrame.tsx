@@ -16,6 +16,7 @@ const PhotoFrame = React.memo(
       attributes,
       listeners,
       isCover,
+      number,
     } = props;
     const { alt, style, ...restImageProps } = imageProps;
 
@@ -48,6 +49,7 @@ const PhotoFrame = React.memo(
               Portada
             </p>
           )}
+          {<p className='absolute bottom-3 right-2 sm:right-3 lg:bottom-4 lg:right-4 m-0 px-1 py-0.5 sm:px-2 sm:py-1 bg-black bg-opacity-70 text-white rounded text-xs sm:text-sm lg:text-base xl:text-lg max-w-full truncate'>{number ? number + 1 : 1}</p>}
         </div>
       </div>
     );
