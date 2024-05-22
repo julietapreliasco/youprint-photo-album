@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React from 'react';
+import React, { useState } from 'react';
 import { PhotoFrameProps } from '../types';
 
 const PhotoFrame = React.memo(
@@ -19,7 +19,7 @@ const PhotoFrame = React.memo(
       number,
     } = props;
     const { alt, style, ...restImageProps } = imageProps;
-
+    const [loaded, setLoaded] = useState(false);
     return (
       <div
         ref={ref}
@@ -37,20 +37,27 @@ const PhotoFrame = React.memo(
         {...attributes}
         {...listeners}
       >
+        {
         <div>
           <img
             alt={alt}
-            className={`w-full object-cover rounded-xl $`}
             {...restImageProps}
-            style={{ border: isCover ? '3px solid #86d6df' : 'none' }}
+            className={isCover && loaded ? "react-photo-album--photo-cover" : "react-photo-album--photo"}
+            onLoad={() => setLoaded(true)}
+            loading='lazy'
           />
-          {isCover && (
+          {(isCover && loaded) && (
             <p className='absolute top-3 left-2 sm:left-3 lg:top-4 lg:left-4 m-0 px-1 py-0.5 sm:px-2 sm:py-1 bg-black bg-opacity-70 text-white rounded text-xs sm:text-sm lg:text-base xl:text-lg max-w-full truncate'>
               Portada
             </p>
           )}
-          {<p className='absolute bottom-3 right-2 sm:right-3 lg:bottom-4 lg:right-4 m-0 px-1 py-0.5 sm:px-2 sm:py-1 bg-black bg-opacity-70 text-white rounded text-xs sm:text-sm lg:text-base xl:text-lg max-w-full truncate'>{number ? number + 1 : 1}</p>}
+          {loaded && !(active === undefined) && (
+            <p className='absolute bottom-3 right-2 sm:right-3 lg:bottom-4 lg:right-4 m-0 px-1 py-0.5 sm:px-2 sm:py-1 bg-black bg-opacity-70 text-white rounded text-xs sm:text-sm lg:text-base xl:text-lg max-w-full truncate'>
+              {number ? number + 1 : 1}
+            </p>
+          )}
         </div>
+        }
       </div>
     );
   }),

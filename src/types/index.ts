@@ -3,6 +3,8 @@ import { Photo, RenderPhotoProps } from 'react-photo-album';
 
 export interface SortablePhoto extends Photo {
   id: UniqueIdentifier;
+  isCover?: boolean
+  number?: number
 }
 
 export type PhotoFrameProps = SortablePhotoProps & {

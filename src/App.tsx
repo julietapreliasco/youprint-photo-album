@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Photo, PhotoAlbum } from 'react-photo-album';
 import { useWindowSize } from 'react-use';
 import {
@@ -28,15 +28,14 @@ import './App.css';
 
 export default function App() {
   const { width } = useWindowSize();
-  const [photos, setPhotos] = React.useState(
+  const [photos, setPhotos] = useState(
     (photoSet as Photo[]).map((photo, index) => ({
       ...photo,
       id: photo.key || photo.src,
       isCover: index === 0,
-      number: index
+      number: index,
     })),
   );
-
   const getRowConstraints = () => {
     if (width < 500) {
       return { minPhotos: 2, maxPhotos: 2 };
@@ -45,10 +44,10 @@ export default function App() {
     }
   };
 
-  const renderedPhotos = React.useRef<{ [key: string]: SortablePhotoProps }>(
+  const renderedPhotos = useRef<{ [key: string]: SortablePhotoProps }>(
     {},
   );
-  const [activeId, setActiveId] = React.useState<UniqueIdentifier>();
+  const [activeId, setActiveId] = useState<UniqueIdentifier>();
   const activeIndex = activeId
     ? photos.findIndex((photo) => photo.id === activeId)
     : undefined;
@@ -67,16 +66,16 @@ export default function App() {
     return photos.map((photo, index) => ({
       ...photo,
       isCover: index === 0,
-      number: index
+      number: index,
     }));
   };
 
-  const handleDragStart = React.useCallback(
+  const handleDragStart = useCallback(
     ({ active }: DragStartEvent) => setActiveId(active.id),
     [],
   );
 
-  const handleDragEnd = React.useCallback((event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
@@ -99,31 +98,38 @@ export default function App() {
     return <SortablePhotoFrame activeIndex={activeIndex} {...props} />;
   };
 
+
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext items={photos}>
-        <div className='md:w-[80%] m-auto'>
-          <PhotoAlbum
-            photos={photos}
-            layout='rows'
-            rowConstraints={getRowConstraints()}
-            renderPhoto={renderPhoto}
-            breakpoints={[500, 600, 1200]}
-            spacing={15}
-            padding={5}
-          />
-        </div>
-      </SortableContext>
-      <DragOverlay>
-        {activeId && (
-          <PhotoFrame overlay {...renderedPhotos.current[activeId]} />
-        )}
-      </DragOverlay>
-    </DndContext>
+    <>
+      {!photoSet ? (
+        <div className="loader">Loading...</div>
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={photos}>
+            <div className='md:w-[80%] m-auto'>
+              <PhotoAlbum
+                photos={photos}
+                layout='rows'
+                rowConstraints={getRowConstraints()}
+                renderPhoto={renderPhoto}
+                breakpoints={[500, 600, 1200]}
+                spacing={15}
+                padding={1}
+              />
+            </div>
+          </SortableContext>
+          <DragOverlay>
+            {activeId && (
+              <PhotoFrame overlay {...renderedPhotos.current[activeId]} />
+            )}
+          </DragOverlay>
+        </DndContext>
+      )}
+    </>
   );
 }
