@@ -1,16 +1,9 @@
-import { Photo, RenderPhotoProps } from 'react-photo-album';
 import PhotoFrame from './PhotoFrame';
-import { UniqueIdentifier } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
-
-interface SortablePhoto extends Photo {
-  id: UniqueIdentifier;
-}
-
-type SortablePhotoProps = RenderPhotoProps<SortablePhoto>;
+import { SortablePhotoProps } from '../types';
 
 function SortablePhotoFrame(
-  props: SortablePhotoProps & { activeIndex?: number },
+  props: SortablePhotoProps & { activeIndex?: number; },
 ) {
   const { photo, activeIndex } = props;
   const { attributes, listeners, isDragging, index, over, setNodeRef } =
@@ -20,6 +13,8 @@ function SortablePhotoFrame(
     <PhotoFrame
       ref={setNodeRef}
       active={isDragging}
+      isCover={photo.isCover}
+      number={photo.number}
       insertPosition={
         activeIndex !== undefined && over?.id === photo.id && !isDragging
           ? index > activeIndex
