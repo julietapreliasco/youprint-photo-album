@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
-import { Photo, PhotoAlbum } from 'react-photo-album';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { PhotoAlbum } from 'react-photo-album';
 import { useWindowSize } from 'react-use';
 import {
   closestCenter,
@@ -28,18 +28,18 @@ import { ExtendedPhoto, SortablePhotoProps } from '../types';
 import { FaRegHandPaper } from 'react-icons/fa';
 import Button from './ui/Button';
 import ConfirmationModal from './ui/Modal';
+import { useParams } from 'react-router-dom';
+import { fetchPhotoAlbumById, getPhotoDimensions } from '../services/photoAlbumService';
+
+const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
 
 export default function Gallery() {
+  const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
-  const [photos, setPhotos] = useState(
-    (photoSet as Photo[]).map((photo, index) => ({
-      ...photo,
-      id: photo.key || photo.src,
-      isCover: index === 0,
-      number: index,
-    })),
-  );
+  const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const getRowConstraints = () => {
     if (width < 500) {
@@ -50,10 +50,6 @@ export default function Gallery() {
   };
 
   const renderedPhotos = useRef<{ [key: string]: SortablePhotoProps }>({});
-  const [activeId, setActiveId] = useState<UniqueIdentifier>();
-  const activeIndex = activeId
-    ? photos.findIndex((photo) => photo.id === activeId)
-    : undefined;
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
@@ -64,6 +60,53 @@ export default function Gallery() {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+
+  useEffect(() => {
+    const getPhotoAlbum = async () => {
+      if(id){
+        try {
+          const data = await fetchPhotoAlbumById(id);
+          const photosData: ExtendedPhoto[] = await Promise.all(
+            data.photos.map(async (url: string, index: number) => {
+              const { width, height } = await getPhotoDimensions(url);
+              return {
+                src: url,
+                width,
+                height,
+                srcSet: breakpoints.map((breakpoint) => {
+                  const newHeight = Math.round((height / width) * breakpoint);
+                  return {
+                    src: `${url}?w=${breakpoint}&h=${newHeight}`,
+                    width: breakpoint,
+                    height: newHeight,
+                  };
+                }),
+                id: url,
+                isCover: index === 0,
+                number: index,
+              };
+            })
+          );
+          setPhotos(photosData);
+          setIsLoading(false);
+        } catch (error) {
+          if (error instanceof Error) {
+            setError(error.message);
+          } else {
+            setError('An unknown error occurred');
+          }
+          setIsLoading(false);
+        }
+      }
+    };
+    getPhotoAlbum();
+  }, [id]);
+
+
+  const [activeId, setActiveId] = useState<UniqueIdentifier>();
+  const activeIndex = activeId
+    ? photos.findIndex((photo) => photo.id === activeId)
+    : undefined;
 
   const updateIsCover = (photos: ExtendedPhoto[]): ExtendedPhoto[] => {
     return photos.map((photo, index) => ({
@@ -112,6 +155,15 @@ export default function Gallery() {
   const handleAction = () => {
     setIsModalOpen(true);
   };
+
+  if (isLoading) {
+    return <div className="loader">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
+
 
   return (
     <>
