@@ -21,7 +21,6 @@ import {
 } from '@dnd-kit/sortable';
 
 
-import photoSet from '../data/photos';
 import PhotoFrame from '../components/PhotoFrame';
 import SortablePhotoFrame from '../components/SortablePhotoFrame';
 import { ExtendedPhoto, SortablePhotoProps } from '../types';
@@ -189,9 +188,6 @@ export default function Gallery() {
           ></Button>
         </div>
       </div>
-      {!photoSet ? (
-        <div className='loader'>Loading...</div>
-      ) : (
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -217,7 +213,6 @@ export default function Gallery() {
             )}
           </DragOverlay>
         </DndContext>
-      )}
        <ConfirmationModal
           isOpen={isModalOpen}
           message='¿Desea confirmar el orden de las fotos?'

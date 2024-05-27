@@ -1,6 +1,5 @@
 const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
-console.log("hola", API_URL)
 export const fetchPhotoAlbumById = async (id: string) => {
   const response = await fetch(`${API_URL}/photo-album/${id}`);
   if (!response.ok) {
