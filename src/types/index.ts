@@ -5,6 +5,7 @@ export interface SortablePhoto extends Photo {
   id: UniqueIdentifier;
   isCover?: boolean
   number?: number
+
 }
 
 export type PhotoFrameProps = SortablePhotoProps & {
