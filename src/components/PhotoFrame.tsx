@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import { PhotoFrameProps } from '../types';
 import { FaTrashAlt } from 'react-icons/fa';
+import { useModal } from '../context/useModalHook';
 
 
 const PhotoFrame = React.memo(
@@ -22,6 +23,14 @@ const PhotoFrame = React.memo(
     } = props;
     const { alt, style, ...restImageProps } = imageProps;
     const [loaded, setLoaded] = useState(false);
+
+    const { openModal } = useModal();
+
+    const handleDelete = () => {
+      openModal('¿Desea eliminar la foto?', () => {
+        console.log('Photo deleted');
+      });
+    };
 
     return (
       <div
@@ -63,7 +72,7 @@ const PhotoFrame = React.memo(
                 <p className='absolute bottom-3 right-2 sm:right-3 lg:bottom-4 lg:right-4 m-0 px-1 py-0.5 sm:px-2 sm:py-1 bg-black bg-opacity-70 text-white rounded text-xs sm:text-sm lg:text-base xl:text-lg max-w-full truncate'>
                   {number ? number + 1 : 1}
                 </p>
-                <button className='absolute top-3 right-2 sm:right-3 lg:top-4 lg:right-4 m-0 px-1 py-1  bg-black bg-opacity-70 text-white rounded text-xs sm:text-sm lg:text-base xl:text-lg max-w-full truncate flex items-center'>
+                <button onClick={handleDelete} className='absolute top-3 right-2 sm:right-3 lg:top-4 lg:right-4 m-0 px-1 py-1  bg-black bg-opacity-70 text-white rounded text-xs sm:text-sm lg:text-base xl:text-lg max-w-full truncate flex items-center'>
                   <FaTrashAlt />
                 </button>
               </>

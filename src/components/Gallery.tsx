@@ -26,9 +26,9 @@ import SortablePhotoFrame from '../components/SortablePhotoFrame';
 import { ExtendedPhoto, SortablePhotoProps } from '../types';
 import { FaRegHandPaper } from 'react-icons/fa';
 import Button from './ui/Button';
-import ConfirmationModal from './ui/Modal';
 import { useParams } from 'react-router-dom';
 import { fetchPhotoAlbumById, getPhotoDimensions } from '../services/photoAlbumService';
+import { useModal } from '../context/useModalHook';
 
 const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
 
@@ -37,8 +37,9 @@ export default function Gallery() {
   const { width } = useWindowSize();
   const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { openModal } = useModal()
 
   const getRowConstraints = () => {
     if (width < 500) {
@@ -101,7 +102,6 @@ export default function Gallery() {
     getPhotoAlbum();
   }, [id]);
 
-
   const [activeId, setActiveId] = useState<UniqueIdentifier>();
   const activeIndex = activeId
     ? photos.findIndex((photo) => photo.id === activeId)
@@ -143,17 +143,9 @@ export default function Gallery() {
     return <SortablePhotoFrame activeIndex={activeIndex} {...props} />;
   };
 
-  const handleConfirm = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleAction = () => {
-    setIsModalOpen(true);
-  };
+  const handleSave = () => {
+    openModal('¿Desea guardar el orden de las fotos?', () => {console.log("Photo album order saved")})
+  }
 
   if (isLoading) {
     return <div className="loader">Loading...</div>;
@@ -177,7 +169,7 @@ export default function Gallery() {
         </div>
         <div className='flex gap-2 pl-6'>
           <Button
-            onClick={handleAction}
+            onClick={handleSave}
             variant='PRIMARY'
             message={'Guardar'}
           ></Button>
@@ -213,12 +205,6 @@ export default function Gallery() {
             )}
           </DragOverlay>
         </DndContext>
-       <ConfirmationModal
-          isOpen={isModalOpen}
-          message='¿Desea confirmar el orden de las fotos?'
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
     </>
   );
 }
