@@ -9,7 +9,18 @@ export const fetchPhotoAlbumById = async (id: string) => {
   return data;
 };
 
-export const getPhotoDimensions = async (url: string): Promise<{ width: number; height: number }> => {
+export const fetchPhotoAlbums = async () => {
+  const response = await fetch(`${API_URL}/photo-album`);
+  if (!response.ok) {
+    throw new Error('Error fetching photo albums');
+  }
+  const data = await response.json();
+  return data;
+};
+
+export const getPhotoDimensions = async (
+  url: string
+): Promise<{ width: number; height: number }> => {
   const img = new Image();
   img.src = url;
   return new Promise((resolve, reject) => {
@@ -20,4 +31,14 @@ export const getPhotoDimensions = async (url: string): Promise<{ width: number; 
       reject(error);
     };
   });
+};
+
+export const deletePhotoAlbum = async (id: string) => {
+  const response = await fetch(`${API_URL}/photo-album/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Error deleting photo album');
+  }
+  return await response.json();
 };

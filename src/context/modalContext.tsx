@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useState } from "react";
+import { ReactNode, createContext, useState } from 'react';
 
 interface ModalContextProps {
   isOpen: boolean;
@@ -9,8 +9,9 @@ interface ModalContextProps {
   closeModal: () => void;
 }
 
-export const ModalContext = createContext<ModalContextProps | undefined>(undefined);
-
+export const ModalContext = createContext<ModalContextProps | undefined>(
+  undefined
+);
 
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +34,9 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ModalContext.Provider value={{ isOpen, message, onConfirm, onCancel, openModal, closeModal }}>
+    <ModalContext.Provider
+      value={{ isOpen, message, onConfirm, onCancel, openModal, closeModal }}
+    >
       {children}
     </ModalContext.Provider>
   );

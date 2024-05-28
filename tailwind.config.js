@@ -8,7 +8,7 @@ export default {
         'yp-secondary-orange': '#bd8222',
         'yp-blue': '#10abbb',
         'yp-secondary-blue': '#0c6d78',
-        "yp-red": "#f15156"
+        'yp-red': '#f15156',
       },
     },
   },

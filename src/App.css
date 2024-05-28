@@ -4,7 +4,7 @@
 
 body {
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -17,7 +17,10 @@ body {
   cursor: grab;
   object-fit: cover;
   border-radius: 3%;
-  box-shadow: rgb(0 0 0 / 20%) 0 3px 3px -2px, rgb(0 0 0 / 14%) 0 3px 4px 0, rgb(0 0 0 / 12%) 0 1px 8px 0;
+  box-shadow:
+    rgb(0 0 0 / 20%) 0 3px 3px -2px,
+    rgb(0 0 0 / 14%) 0 3px 4px 0,
+    rgb(0 0 0 / 12%) 0 1px 8px 0;
   transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 }
 
@@ -34,7 +37,7 @@ body {
 .react-photo-album--photo-cover {
   object-fit: cover;
   border-radius: 3%;
-  border: 3px solid #86d6df
+  border: 3px solid #86d6df;
 }
 
 .photo-frame.overlay {
@@ -48,7 +51,7 @@ body {
 
 .photo-frame.insertBefore:before,
 .photo-frame.insertAfter:after {
-  content: "";
+  content: '';
   position: absolute;
   background-color: #f9ac2b;
   border-radius: 1px;

@@ -20,26 +20,28 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 
-
 import PhotoFrame from '../components/PhotoFrame';
 import SortablePhotoFrame from '../components/SortablePhotoFrame';
 import { ExtendedPhoto, SortablePhotoProps } from '../types';
 import { FaRegHandPaper } from 'react-icons/fa';
-import Button from './ui/Button';
+import { Button } from './ui/Button';
 import { useParams } from 'react-router-dom';
-import { fetchPhotoAlbumById, getPhotoDimensions } from '../services/photoAlbumService';
+import {
+  fetchPhotoAlbumById,
+  getPhotoDimensions,
+} from '../services/photoAlbumService';
 import { useModal } from '../context/useModalHook';
 
 const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
 
-export default function Gallery() {
+export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
   const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { openModal } = useModal()
+  const { openModal } = useModal();
 
   const getRowConstraints = () => {
     if (width < 500) {
@@ -58,12 +60,12 @@ export default function Gallery() {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
 
   useEffect(() => {
     const getPhotoAlbum = async () => {
-      if(id){
+      if (id) {
         try {
           const data = await fetchPhotoAlbumById(id);
           const photosData: ExtendedPhoto[] = await Promise.all(
@@ -117,7 +119,7 @@ export default function Gallery() {
 
   const handleDragStart = useCallback(
     ({ active }: DragStartEvent) => setActiveId(active.id),
-    [],
+    []
   );
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
@@ -144,8 +146,10 @@ export default function Gallery() {
   };
 
   const handleSave = () => {
-    openModal('¿Desea guardar el orden de las fotos?', () => {console.log("Photo album order saved")})
-  }
+    openModal('¿Desea guardar el orden de las fotos?', () => {
+      console.log('Photo album order saved');
+    });
+  };
 
   if (isLoading) {
     return <div className="loader">Loading...</div>;
@@ -155,56 +159,55 @@ export default function Gallery() {
     return <div className="error">{error}</div>;
   }
 
-
   return (
     <>
-      <div className='flex md:justify-center md:items-center pb-10 gap-3 flex-col md:flex-row'>
-        <div className='w-full md:w-4/5 rounded-md text-center'>
-          <div className='flex items-start flex-row justify-start'>
-            <FaRegHandPaper className='mr-2 text-yp-blue md:text-xl' />
-            <p className='text-xs text-left md:text-base'>
+      <div className="m-auto flex flex-row flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
+        <div className="rounded-md text-center">
+          <div className="flex flex-row items-start justify-start">
+            <FaRegHandPaper className="mr-2 text-yp-blue md:text-xl" />
+            <p className="text-left text-xs md:text-sm lg:text-base">
               Arrastrar y soltar las fotos para ordenarlas
             </p>
           </div>
         </div>
-        <div className='flex gap-2 pl-6'>
+        <div className="flex gap-2 pl-6">
           <Button
             onClick={handleSave}
-            variant='PRIMARY'
+            variant="PRIMARY"
             message={'Guardar'}
           ></Button>
           <Button
             onClick={() => console.log('hii')}
-            variant='SECONDARY'
+            variant="SECONDARY"
             message={'Descargar'}
           ></Button>
         </div>
       </div>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={photos}>
-            <div className='md:w-[80%] m-auto'>
-              <PhotoAlbum
-                photos={photos}
-                layout='rows'
-                rowConstraints={getRowConstraints()}
-                renderPhoto={renderPhoto}
-                breakpoints={[500, 600, 1200]}
-                spacing={15}
-                padding={1}
-              />
-            </div>
-          </SortableContext>
-          <DragOverlay>
-            {activeId && (
-              <PhotoFrame overlay {...renderedPhotos.current[activeId]} />
-            )}
-          </DragOverlay>
-        </DndContext>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={photos}>
+          <div className="m-auto md:w-[80%]">
+            <PhotoAlbum
+              photos={photos}
+              layout="rows"
+              rowConstraints={getRowConstraints()}
+              renderPhoto={renderPhoto}
+              breakpoints={[500, 600, 1200]}
+              spacing={15}
+              padding={1}
+            />
+          </div>
+        </SortableContext>
+        <DragOverlay>
+          {activeId && (
+            <PhotoFrame overlay {...renderedPhotos.current[activeId]} />
+          )}
+        </DragOverlay>
+      </DndContext>
     </>
   );
-}
+};
