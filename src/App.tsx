@@ -5,7 +5,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/gallery/:id" Component={Gallery} />
+      <Route path="/gallery/:id" element={<Gallery />} />
       </Routes>
     </Router>
   );
