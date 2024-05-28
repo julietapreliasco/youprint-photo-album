@@ -1,26 +1,23 @@
-interface ConfirmationModalProps {
-  isOpen: boolean;
-  message: string;
-  onConfirm: () => void;
-  onCancel: () => void;
-}
+import { useModal } from '../../context/useModalHook';
 
-export default function ConfirmationModal({ isOpen, message, onConfirm, onCancel }: ConfirmationModalProps) {
+export default function ConfirmationModal() {
+  const { isOpen, message, onCancel, onConfirm } = useModal();
+
   return (
     <>
       {isOpen && (
-        <div className="fixed z-50 inset-0 overflow-y-auto flex items-center justify-center">
-          <div className=" flex flex-col h-40 justify-around items-center bg-white p-6 rounded-lg shadow-lg">
-            <p text-lg mb-4>{message}</p>
-            <div className="modal-buttons">
-            <button
-                className="mr-2 px-4 py-2 bg-yp-blue font-bold text-white rounded hover:bg-yp-secondary-blue"
+        <div className='fixed z-50 inset-0 overflow-y-auto flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm'>
+          <div className='flex flex-col h-auto max-w-sm w-full mx-4 sm:mx-auto bg-white p-6 rounded-lg shadow-lg'>
+            <p className='text-sm sm:text-base mb-4 text-center'>{message}</p>
+            <div className='flex justify-evenly w-full'>
+              <button
+                className='mr-2 px-4 py-2 bg-blue-500 text-sm sm:text-base font-bold text-white rounded hover:bg-blue-600'
                 onClick={onConfirm}
               >
                 Confirmar
               </button>
               <button
-                className="px-4 py-2 bg-gray-300 font-bold text-gray-700 rounded hover:bg-gray-400"
+                className='px-4 py-2 bg-gray-300 text-sm sm:text-base font-bold text-gray-700 rounded hover:bg-gray-400'
                 onClick={onCancel}
               >
                 Cancelar
