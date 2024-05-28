@@ -26,9 +26,9 @@ import SortablePhotoFrame from '../components/SortablePhotoFrame';
 import { ExtendedPhoto, SortablePhotoProps } from '../types';
 import { FaRegHandPaper } from 'react-icons/fa';
 import Button from './ui/Button';
-import ConfirmationModal from './ui/Modal';
 import { useParams } from 'react-router-dom';
 import { fetchPhotoAlbumById, getPhotoDimensions } from '../services/photoAlbumService';
+import { useModal } from '../context/useModalHook';
 
 const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
 
@@ -37,12 +37,13 @@ export default function Gallery() {
   const { width } = useWindowSize();
   const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { openModal } = useModal()
 
   const getRowConstraints = () => {
     if (width < 500) {
-      return { minPhotos: 2, maxPhotos: 2 };
+      return { minPhotos: 1, maxPhotos: 2 };
     } else {
       return { minPhotos: 2, maxPhotos: 3 };
     }
@@ -101,7 +102,6 @@ export default function Gallery() {
     getPhotoAlbum();
   }, [id]);
 
-
   const [activeId, setActiveId] = useState<UniqueIdentifier>();
   const activeIndex = activeId
     ? photos.findIndex((photo) => photo.id === activeId)
@@ -143,17 +143,9 @@ export default function Gallery() {
     return <SortablePhotoFrame activeIndex={activeIndex} {...props} />;
   };
 
-  const handleConfirm = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleAction = () => {
-    setIsModalOpen(true);
-  };
+  const handleSave = () => {
+    openModal('¿Desea guardar el orden de las fotos?', () => {console.log("Photo album order saved")})
+  }
 
   if (isLoading) {
     return <div className="loader">Loading...</div>;
@@ -166,20 +158,20 @@ export default function Gallery() {
 
   return (
     <>
-      <div className='flex md:justify-center md:items-center flex-col sm:flex-row'>
-        <div className='w-full md:w-4/5 pb-2 rounded-md text-center'>
-          <div className='flex items-start mb-2 flex-row justify-start'>
+      <div className='flex md:justify-center md:items-center pb-10 gap-3 flex-col md:flex-row'>
+        <div className='w-full md:w-4/5 rounded-md text-center'>
+          <div className='flex items-start flex-row justify-start'>
             <FaRegHandPaper className='mr-2 text-yp-blue md:text-xl' />
             <p className='text-xs text-left md:text-base'>
               Arrastrar y soltar las fotos para ordenarlas
             </p>
           </div>
         </div>
-        <div className='flex ml-5 gap-2'>
+        <div className='flex gap-2 pl-6'>
           <Button
-            onClick={handleAction}
+            onClick={handleSave}
             variant='PRIMARY'
-            message={'Confirmar orden'}
+            message={'Guardar'}
           ></Button>
           <Button
             onClick={() => console.log('hii')}
@@ -213,12 +205,6 @@ export default function Gallery() {
             )}
           </DragOverlay>
         </DndContext>
-       <ConfirmationModal
-          isOpen={isModalOpen}
-          message='¿Desea confirmar el orden de las fotos?'
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
     </>
   );
 }
