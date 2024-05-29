@@ -33,6 +33,7 @@ import {
 import { useModal } from '../context/useModalHook';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { useRequest } from '../context/useRequestHook';
 
 const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
 
@@ -40,10 +41,8 @@ export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
   const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const { openModal } = useModal();
+  const { setLoading, setError } = useRequest();
 
   const getRowConstraints = () => {
     if (width < 500) {
@@ -65,12 +64,11 @@ export const Gallery = () => {
     })
   );
 
-  console.log(photos);
-
   useEffect(() => {
     const getPhotoAlbum = async () => {
       if (id) {
         try {
+          setLoading(true);
           const data = await fetchPhotoAlbumById(id);
           const { client, photos: photoUrls } = data;
           const photosData: ExtendedPhoto[] = await Promise.all(
@@ -96,14 +94,14 @@ export const Gallery = () => {
             })
           );
           setPhotos(photosData);
-          setIsLoading(false);
+          setLoading(false);
         } catch (error) {
           if (error instanceof Error) {
             setError(error.message);
           } else {
             setError('An unknown error occurred');
           }
-          setIsLoading(false);
+          setLoading(false);
         }
       }
     };
@@ -156,14 +154,6 @@ export const Gallery = () => {
       console.log('Photo album order saved');
     });
   };
-
-  if (isLoading) {
-    return <div className="loader">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="error">{error}</div>;
-  }
 
   const handleDownload = async () => {
     const zip = new JSZip();
