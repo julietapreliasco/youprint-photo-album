@@ -42,3 +42,17 @@ export const deletePhotoAlbum = async (id: string) => {
   }
   return await response.json();
 };
+
+export const updatePhotoAlbum = async (id: string, photos: string[]) => {
+  const response = await fetch(`${API_URL}/photo-album/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ photos }),
+  });
+  if (!response.ok) {
+    throw new Error('Error updating photo album');
+  }
+  return await response.json();
+};

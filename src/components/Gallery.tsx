@@ -35,13 +35,15 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { useRequest } from '../context/useRequestHook';
 import OnBoarding from './Onboarding';
+import { usePhotoContext } from '../context/usePhotosHook';
 
 const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
 
 export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
-  const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
+  const { photos, setPhotos, handleUpdatePhotoAlbum } = usePhotoContext();
+
   const { openModal } = useModal();
   const { setLoading, setError } = useRequest();
 
@@ -150,9 +152,9 @@ export const Gallery = () => {
     return <SortablePhotoFrame activeIndex={activeIndex} {...props} />;
   };
 
-  const handleSave = () => {
+  const handleSave = (id: string, photos: string[]) => {
     openModal('¿Desea guardar el orden de las fotos?', () => {
-      console.log('Photo album order saved');
+      handleUpdatePhotoAlbum(id, photos);
     });
   };
 
@@ -184,7 +186,16 @@ export const Gallery = () => {
         <OnBoarding />
         <div className="flex gap-2 self-start">
           <Button
-            onClick={handleSave}
+            onClick={() => {
+              if (id) {
+                handleSave(
+                  id,
+                  photos.map((photo) => photo.id)
+                );
+              } else {
+                console.error('ID is undefined');
+              }
+            }}
             variant="PRIMARY"
             message={'Guardar'}
           ></Button>

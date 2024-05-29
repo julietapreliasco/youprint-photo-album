@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { PhotoFrameProps } from '../types';
 import { FaTrashAlt } from 'react-icons/fa';
 import { useModal } from '../context/useModalHook';
+import { usePhotoContext } from '../context/usePhotosHook';
 
 const PhotoFrame = React.memo(
   React.forwardRef<HTMLDivElement, PhotoFrameProps>(
@@ -20,13 +21,14 @@ const PhotoFrame = React.memo(
       } = props;
       const { alt, style, ...restImageProps } = imageProps;
       const [loaded, setLoaded] = useState(false);
+      const { deletePhoto } = usePhotoContext();
 
       const { openModal } = useModal();
 
       const handleDelete = () => {
-        openModal('¿Desea eliminar la foto?', () => {
-          console.log('Photo deleted');
-        });
+        openModal('¿Desea eliminar esta foto?', () =>
+          deletePhoto(imageProps.src)
+        );
       };
 
       return (
