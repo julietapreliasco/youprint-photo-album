@@ -32,7 +32,6 @@ export const PhotoAlbumList = () => {
     };
     getPhotoAlbum();
   }, []);
-  console.log(photos);
   console.log(error);
   console.log(isLoading);
 
@@ -58,14 +57,14 @@ export const PhotoAlbumList = () => {
       {photos.map((photo) => (
         <div
           key={photo._id}
-          className="flex w-3/4 max-w-full flex-col items-center gap-3 rounded-xl border-2 p-5 text-center text-sm hover:bg-slate-100 md:flex-row md:justify-between md:text-base lg:w-1/2"
+          className="flex flex-col items-center gap-3 rounded-xl border-2 p-5 text-center text-sm hover:bg-slate-100 sm:w-3/4 sm:max-w-full sm:flex-row sm:justify-between sm:text-base lg:w-1/2"
         >
-          <div className="flex flex-col md:items-start">
+          <div className="flex flex-col sm:items-start">
             <span className="font-semibold">Cliente:</span>
             {photo.client.name && <span className="">{photo.client.name}</span>}
             <span className="">{photo.client.phone}</span>
           </div>
-          <div className="flex gap-3 md:self-end">
+          <div className="flex gap-3 sm:self-end">
             <Button
               variant="PRIMARY"
               message="Galería"
