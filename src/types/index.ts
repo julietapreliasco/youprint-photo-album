@@ -23,6 +23,7 @@ export interface ExtendedPhoto extends Photo {
   id: string;
   isCover: boolean;
   number: number;
+  client: { name?: string; phone: string };
 }
 
 export interface PhotoAlbum {
