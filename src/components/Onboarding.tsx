@@ -32,24 +32,25 @@ const OnBoarding = () => {
         <div className="flex flex-col gap-2">
           <div className="text-left text-xs md:text-sm lg:text-base">
             <FaRegHandPaper className="mr-2 inline text-yp-blue md:text-xl" />
-            <span>Arrastrar y soltar las fotos para ordenarlas</span>
+            <span>Arrastra y soltar las fotos para ordenarlas</span>
           </div>
           <div className="text-left text-xs md:text-sm lg:text-base">
             <FaRegSave className="mr-2 inline text-yp-blue md:text-xl" />
             <span>
-              Hacer click en guardar cuando termines de ordenar las fotos
+              Hacer click en "Guardar" al terminar de ordenar las fotos
             </span>
           </div>
           <div className="text-left text-xs md:text-sm lg:text-base">
             <FaTrashAlt className="mr-2 inline text-yp-blue md:text-xl" />
             <span>
-              Una vez que guardes no podrás recuperar las fotos borradas
+              Una vez guardados los cambios, no se podrán recuperar las fotos
+              borradas
             </span>
           </div>
           <div className="text-left text-xs md:text-sm lg:text-base">
             <MdOutlineRefresh className="mr-2 inline text-yp-blue md:text-xl" />
             <span>
-              Si quieres volver a empezar, recarga la página antes de guardar
+              Para volver a empezar, recargar la página antes de guardar
             </span>
           </div>
         </div>
