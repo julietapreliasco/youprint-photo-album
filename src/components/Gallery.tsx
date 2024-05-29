@@ -31,6 +31,8 @@ import {
   getPhotoDimensions,
 } from '../services/photoAlbumService';
 import { useModal } from '../context/useModalHook';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
 
@@ -63,13 +65,16 @@ export const Gallery = () => {
     })
   );
 
+  console.log(photos);
+
   useEffect(() => {
     const getPhotoAlbum = async () => {
       if (id) {
         try {
           const data = await fetchPhotoAlbumById(id);
+          const { client, photos: photoUrls } = data;
           const photosData: ExtendedPhoto[] = await Promise.all(
-            data.photos.map(async (url: string, index: number) => {
+            photoUrls.map(async (url: string, index: number) => {
               const { width, height } = await getPhotoDimensions(url);
               return {
                 src: url,
@@ -86,6 +91,7 @@ export const Gallery = () => {
                 id: url,
                 isCover: index === 0,
                 number: index,
+                client,
               };
             })
           );
@@ -159,6 +165,28 @@ export const Gallery = () => {
     return <div className="error">{error}</div>;
   }
 
+  const handleDownload = async () => {
+    const zip = new JSZip();
+    photos.forEach((photo, index) => {
+      fetch(photo.src)
+        .then((response) => response.blob())
+        .then((blob) => {
+          zip.file(`${index + 1}.jpeg`, blob);
+          if (index === photos.length - 1) {
+            zip.generateAsync({ type: 'blob' }).then((content) => {
+              saveAs(
+                content,
+                `${photo.client.name ?? photo.client.phone}_photo_album.zip`
+              );
+            });
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching image:', error);
+        });
+    });
+  };
+
   return (
     <>
       <div className="m-auto flex flex-row flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
@@ -177,7 +205,7 @@ export const Gallery = () => {
             message={'Guardar'}
           ></Button>
           <Button
-            onClick={() => console.log('hii')}
+            onClick={handleDownload}
             variant="SECONDARY"
             message={'Descargar'}
           ></Button>
