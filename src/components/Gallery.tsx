@@ -23,7 +23,7 @@ import {
 import PhotoFrame from '../components/PhotoFrame';
 import SortablePhotoFrame from '../components/SortablePhotoFrame';
 import { ExtendedPhoto, SortablePhotoProps } from '../types';
-import { FaRegHandPaper } from 'react-icons/fa';
+// import { FaRegHandPaper } from 'react-icons/fa';
 import { Button } from './ui/Button';
 import { useParams } from 'react-router-dom';
 import {
@@ -34,6 +34,7 @@ import { useModal } from '../context/useModalHook';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { useRequest } from '../context/useRequestHook';
+import OnBoarding from './Onboarding';
 
 const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
 
@@ -179,16 +180,9 @@ export const Gallery = () => {
 
   return (
     <>
-      <div className="m-auto flex flex-row flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
-        <div className="rounded-md text-center">
-          <div className="flex flex-row items-start justify-start">
-            <FaRegHandPaper className="mr-2 text-yp-blue md:text-xl" />
-            <p className="text-left text-xs md:text-sm lg:text-base">
-              Arrastrar y soltar las fotos para ordenarlas
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-2 pl-6">
+      <div className="m-auto flex flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
+        <OnBoarding />
+        <div className="flex gap-2 self-start">
           <Button
             onClick={handleSave}
             variant="PRIMARY"
