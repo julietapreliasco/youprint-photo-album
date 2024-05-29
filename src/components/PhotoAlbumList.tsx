@@ -7,33 +7,32 @@ import { PhotoAlbum } from '../types';
 import { Button } from './ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../context/useModalHook';
+import { useRequest } from '../context/useRequestHook';
 
 export const PhotoAlbumList = () => {
   const [photos, setPhotos] = useState<PhotoAlbum[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { openModal } = useModal();
+  const { setLoading, setError } = useRequest();
 
   useEffect(() => {
     const getPhotoAlbum = async () => {
       try {
+        setLoading(true);
         const data = await fetchPhotoAlbums();
         setPhotos(data);
-        setIsLoading(false);
+        setLoading(false);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
         } else {
           setError('An unknown error occurred');
         }
-        setIsLoading(false);
+        setLoading(false);
       }
     };
     getPhotoAlbum();
   }, []);
-  console.log(error);
-  console.log(isLoading);
 
   const handleDelete = (id: string) => {
     openModal(
