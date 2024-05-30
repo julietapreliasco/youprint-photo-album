@@ -14,6 +14,7 @@ export const RequestContext = createContext<RequestContextProps | undefined>(
 export const RequestProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   return (
     <RequestContext.Provider value={{ loading, error, setLoading, setError }}>
       {children}
