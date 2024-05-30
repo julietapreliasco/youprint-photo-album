@@ -49,7 +49,7 @@ export const Gallery = () => {
     if (width < 500) {
       return { minPhotos: 1, maxPhotos: 2 };
     } else {
-      return { minPhotos: 2, maxPhotos: 3 };
+      return { minPhotos: 1, maxPhotos: 3 };
     }
   };
 
@@ -85,6 +85,9 @@ export const Gallery = () => {
       }
     };
     getPhotoAlbum();
+    return () => {
+      setPhotos([]);
+    };
   }, [id]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier>();
