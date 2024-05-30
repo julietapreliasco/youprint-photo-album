@@ -23,13 +23,9 @@ import {
 import PhotoFrame from '../components/PhotoFrame';
 import SortablePhotoFrame from '../components/SortablePhotoFrame';
 import { ExtendedPhoto, SortablePhotoProps } from '../types';
-// import { FaRegHandPaper } from 'react-icons/fa';
 import { Button } from './ui/Button';
 import { useParams } from 'react-router-dom';
-import {
-  fetchPhotoAlbumById,
-  getPhotoDimensions,
-} from '../services/photoAlbumService';
+import { fetchPhotoAlbumById } from '../services/photoAlbumService';
 import { useModal } from '../context/useModalHook';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -37,15 +33,17 @@ import { useRequest } from '../context/useRequestHook';
 import OnBoarding from './Onboarding';
 import { usePhotoContext } from '../context/usePhotosHook';
 
-const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
-
 export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
-  const { photos, setPhotos, handleUpdatePhotoAlbum } = usePhotoContext();
+  const { photos, setPhotos, handlePhotoAlbum } = usePhotoContext();
 
   const { openModal } = useModal();
   const { setLoading, setError } = useRequest();
+  const [client, setClient] = useState<{ name?: string; phone: string }>({
+    name: '',
+    phone: '',
+  });
 
   const getRowConstraints = () => {
     if (width < 500) {
@@ -72,31 +70,9 @@ export const Gallery = () => {
       if (id) {
         try {
           setLoading(true);
-          const data = await fetchPhotoAlbumById(id);
-          const { client, photos: photoUrls } = data;
-          const photosData: ExtendedPhoto[] = await Promise.all(
-            photoUrls.map(async (url: string, index: number) => {
-              const { width, height } = await getPhotoDimensions(url);
-              return {
-                src: url,
-                width,
-                height,
-                srcSet: breakpoints.map((breakpoint) => {
-                  const newHeight = Math.round((height / width) * breakpoint);
-                  return {
-                    src: `${url}?w=${breakpoint}&h=${newHeight}`,
-                    width: breakpoint,
-                    height: newHeight,
-                  };
-                }),
-                id: url,
-                isCover: index === 0,
-                number: index,
-                client,
-              };
-            })
-          );
-          setPhotos(photosData);
+          const photoAlbum = await fetchPhotoAlbumById(id);
+          setClient(photoAlbum.client);
+          handlePhotoAlbum(id, photoAlbum.photos, false, client);
           setLoading(false);
         } catch (error) {
           if (error instanceof Error) {
@@ -154,30 +130,33 @@ export const Gallery = () => {
 
   const handleSave = (id: string, photos: string[]) => {
     openModal('¿Desea guardar el orden de las fotos?', () => {
-      handleUpdatePhotoAlbum(id, photos);
+      handlePhotoAlbum(id, photos, true, client);
     });
   };
 
   const handleDownload = async () => {
     const zip = new JSZip();
-    photos.forEach((photo, index) => {
-      fetch(photo.src)
-        .then((response) => response.blob())
-        .then((blob) => {
-          zip.file(`${index + 1}.jpeg`, blob);
-          if (index === photos.length - 1) {
-            zip.generateAsync({ type: 'blob' }).then((content) => {
-              saveAs(
-                content,
-                `${photo.client.name ?? photo.client.phone}_photo_album.zip`
-              );
-            });
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching image:', error);
-        });
-    });
+
+    try {
+      const fetchPromises = photos.map((photo, index) => {
+        return fetch(photo.src)
+          .then((response) => response.blob())
+          .then((blob) => {
+            zip.file(`${index + 1}.jpeg`, blob);
+          })
+          .catch((error) => {
+            console.error('Error fetching image:', error);
+          });
+      });
+
+      await Promise.all(fetchPromises);
+
+      zip.generateAsync({ type: 'blob' }).then((content) => {
+        saveAs(content, `${client.name ?? client.phone}_photo_album.zip`);
+      });
+    } catch (error) {
+      console.error('Error generating zip:', error);
+    }
   };
 
   return (

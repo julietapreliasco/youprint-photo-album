@@ -8,7 +8,15 @@ import {
 interface PhotoContextType {
   photos: ExtendedPhoto[];
   setPhotos: React.Dispatch<React.SetStateAction<ExtendedPhoto[]>>;
-  handleUpdatePhotoAlbum: (id: string, photos: string[]) => Promise<void>;
+  handlePhotoAlbum: (
+    id: string,
+    photoAlbum: string[],
+    isUpdating: boolean,
+    client: {
+      name?: string;
+      phone: string;
+    }
+  ) => Promise<void>;
   deletePhoto: (photoId: string) => void;
 }
 
@@ -21,11 +29,21 @@ const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
 export const PhotoProvider = ({ children }: { children: ReactNode }) => {
   const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
 
-  const handleUpdatePhotoAlbum = async (id: string, photos: string[]) => {
+  const handlePhotoAlbum = async (
+    id: string,
+    photoAlbum: string[],
+    isUpdating: boolean,
+    client: {
+      name?: string;
+      phone: string;
+    }
+  ) => {
     try {
-      const updatedPhotos = await updatePhotoAlbum(id, photos);
+      if (isUpdating) {
+        await updatePhotoAlbum(id, photoAlbum);
+      }
       const photosData: ExtendedPhoto[] = await Promise.all(
-        updatedPhotos.photos.map(async (url: string, index: number) => {
+        photoAlbum.map(async (url: string, index: number) => {
           const { width, height } = await getPhotoDimensions(url);
           return {
             src: url,
@@ -42,6 +60,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
             id: url,
             isCover: index === 0,
             number: index,
+            client: client,
           };
         })
       );
@@ -68,7 +87,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <PhotoContext.Provider
-      value={{ photos, setPhotos, handleUpdatePhotoAlbum, deletePhoto }}
+      value={{ photos, setPhotos, handlePhotoAlbum, deletePhoto }}
     >
       {children}
     </PhotoContext.Provider>
