@@ -4,6 +4,7 @@ import {
   updatePhotoAlbum,
   getPhotoDimensions,
 } from '../services/photoAlbumService';
+import { enqueueSnackbar } from 'notistack';
 
 interface PhotoContextType {
   photos: ExtendedPhoto[];
@@ -41,6 +42,9 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
     try {
       if (isUpdating) {
         await updatePhotoAlbum(id, photoAlbum);
+        enqueueSnackbar('El orden de las fotos se ha guardado correctamente', {
+          variant: 'success',
+        });
       }
       const photosData: ExtendedPhoto[] = await Promise.all(
         photoAlbum.map(async (url: string, index: number) => {
@@ -67,6 +71,10 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
       setPhotos(photosData);
     } catch (error) {
       console.error('Error al actualizar el álbum de fotos:', error);
+      isUpdating &&
+        enqueueSnackbar(`Error al guardar el orden de las fotos: ${error}`, {
+          variant: 'error',
+        });
     }
   };
 
