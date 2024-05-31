@@ -3,16 +3,19 @@ import { ModalProvider } from './modalContext';
 import { RequestProvider } from './requestContext';
 import { PhotoProvider } from './photoContext';
 import { SnackbarProvider } from 'notistack';
+import { AuthProvider } from './AuthContext';
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <SnackbarProvider maxSnack={1}>
-      <RequestProvider>
-        <PhotoProvider>
-          <ModalProvider>{children}</ModalProvider>
-        </PhotoProvider>
-      </RequestProvider>
-    </SnackbarProvider>
+    <AuthProvider>
+      <SnackbarProvider maxSnack={1}>
+        <RequestProvider>
+          <PhotoProvider>
+            <ModalProvider>{children}</ModalProvider>
+          </PhotoProvider>
+        </RequestProvider>
+      </SnackbarProvider>
+    </AuthProvider>
   );
 };
 
