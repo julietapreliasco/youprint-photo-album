@@ -32,10 +32,10 @@ export const Login = () => {
 
   return (
     <form
-      className="relative m-auto mt-10 flex w-fit flex-col items-center gap-3 rounded-xl border border-yp-blue p-10 text-sm font-semibold shadow-xl"
+      className="relative m-auto mt-10 flex w-fit flex-col items-center gap-3 rounded-xl border border-yp-blue p-10 text-xs font-semibold shadow-xl md:text-sm"
       onSubmit={handleLogin}
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex w-36 flex-col gap-2 sm:w-auto">
         <label>Usuario:</label>
         <input
           className="rounded-lg border border-yp-secondary-blue px-2 py-1"
@@ -44,7 +44,7 @@ export const Login = () => {
           onChange={(e) => setUsername(e.target.value)}
         />
       </div>
-      <div className="flex flex-col gap-2 pb-6">
+      <div className="flex w-36 flex-col gap-2 sm:w-auto">
         <label>Contraseña:</label>
         <input
           className="rounded-lg border border-yp-secondary-blue px-2 py-1"
@@ -54,7 +54,7 @@ export const Login = () => {
         />
       </div>
       <span
-        className={`absolute bottom-20 left-0 mb-1 w-full text-center text-xs text-yp-red ${error ? 'block' : 'hidden'}`}
+        className={`text-center text-xs text-yp-red ${error ? 'block' : 'hidden'}`}
       >
         {error}
       </span>
