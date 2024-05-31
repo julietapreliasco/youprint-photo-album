@@ -1,31 +1,29 @@
 import { useState } from 'react';
 import { useAuth } from '../context/useAuthHook';
-const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
+import { useRequest } from '../context/useRequestHook';
+import { loginRequest } from '../services/authService';
 
 export const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const { setError } = useRequest();
   const { login } = useAuth();
-  const handleLogin = async (e: any) => {
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${API_URL}/admin/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      const response = await loginRequest(username, password);
 
-      const data = await response.json();
+      if (response) {
+        if (response.token) {
+          login(response?.token);
+          window.location.href = '/';
+        }
 
-      if (response.ok) {
-        login(data.token);
-        window.location.href = '/';
-      } else {
-        setError(data.error);
+        if (response.error) {
+          setError(response.error);
+        }
       }
     } catch (error) {
       setError('Ocurrió un error al intentar iniciar sesión.');
@@ -50,7 +48,6 @@ export const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      {error && <p>{error}</p>}
       <button type="submit">Login</button>
     </form>
   );
