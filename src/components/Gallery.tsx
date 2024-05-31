@@ -32,6 +32,7 @@ import { saveAs } from 'file-saver';
 import { useRequest } from '../context/useRequestHook';
 import OnBoarding from './Onboarding';
 import { usePhotoContext } from '../context/usePhotosHook';
+import { useAuth } from '../context/useAuthHook';
 
 export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,6 +41,7 @@ export const Gallery = () => {
 
   const { openModal } = useModal();
   const { setLoading, setError } = useRequest();
+  const { isAuthenticated } = useAuth();
   const [client, setClient] = useState<{ name?: string; phone: string }>({
     name: '',
     phone: '',
@@ -181,11 +183,13 @@ export const Gallery = () => {
             variant="PRIMARY"
             message={'Guardar'}
           ></Button>
-          <Button
-            onClick={handleDownload}
-            variant="SECONDARY"
-            message={'Descargar'}
-          ></Button>
+          {isAuthenticated && (
+            <Button
+              onClick={handleDownload}
+              variant="SECONDARY"
+              message={'Descargar'}
+            ></Button>
+          )}
         </div>
       </div>
       <DndContext

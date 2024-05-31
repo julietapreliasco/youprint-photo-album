@@ -1,10 +1,11 @@
 interface ButtonProps {
   message: string;
-  onClick: () => void;
+  onClick?: () => void;
   variant?: 'PRIMARY' | 'SECONDARY';
+  type?: 'submit' | 'reset' | 'button' | undefined;
 }
 
-export const Button = ({ message, onClick, variant }: ButtonProps) => {
+export const Button = ({ message, onClick, variant, type }: ButtonProps) => {
   const color =
     variant === 'PRIMARY'
       ? 'bg-yp-blue hover:bg-yp-secondary-blue'
@@ -14,7 +15,7 @@ export const Button = ({ message, onClick, variant }: ButtonProps) => {
 
   return (
     <>
-      <button className={className} onClick={onClick}>
+      <button type={type} className={className} onClick={onClick}>
         {message}
       </button>
     </>
