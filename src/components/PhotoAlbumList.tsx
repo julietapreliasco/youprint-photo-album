@@ -8,11 +8,12 @@ import { useNavigate } from 'react-router-dom';
 import { useModal } from '../context/useModalHook';
 import { useRequest } from '../context/useRequestHook';
 import { usePhotoContext } from '../context/usePhotosHook';
+import { enqueueSnackbar } from 'notistack';
 
 export const PhotoAlbumList = () => {
   const navigate = useNavigate();
   const { openModal } = useModal();
-  const { setLoading, setError } = useRequest();
+  const { setLoading, setError, error } = useRequest();
   const { photoAlbums, setPhotoAlbums } = usePhotoContext();
 
   useEffect(() => {
@@ -21,13 +22,13 @@ export const PhotoAlbumList = () => {
         setLoading(true);
         const data = await fetchPhotoAlbums();
         setPhotoAlbums(data);
-        setLoading(false);
       } catch (error) {
+        let errorMessage = 'An unknown error occurred';
         if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError('An unknown error occurred');
+          errorMessage = error.message;
         }
+        setError({ error: true, message: errorMessage });
+      } finally {
         setLoading(false);
       }
     };
@@ -46,12 +47,20 @@ export const PhotoAlbumList = () => {
           setPhotoAlbums((prevPhotos) =>
             prevPhotos.filter((photo) => photo._id !== id)
           );
+          enqueueSnackbar('Fotolibro borrado con éxito', {
+            variant: 'success',
+          });
         } catch (error) {
           console.error('Error deleting photo album:', error);
+          enqueueSnackbar(`Error al borrar el Fotolibro: ${error}`, {
+            variant: 'error',
+          });
         }
       }
     );
   };
+
+  if (error.error) return null;
 
   return (
     <div className="flex flex-col items-center gap-5">

@@ -5,40 +5,52 @@ const getAuthToken = () => {
 };
 
 export const fetchPhotoAlbumById = async (id: string) => {
-  const response = await fetch(`${API_URL}/photo-album/${id}`);
-  if (!response.ok) {
-    throw new Error('Error fetching photo album');
-  }
-  const data = await response.json();
+  try {
+    const response = await fetch(`${API_URL}/photo-album/${id}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error);
+    }
+    const data = await response.json();
 
-  const imageLoadPromises = data.photos.map((photo: string) => {
-    return new Promise<void>((resolve, reject) => {
-      const img = new Image();
-      img.src = photo;
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error('Failed to load image'));
+    const imageLoadPromises = data.photos.map((photo: string) => {
+      return new Promise<void>((resolve, reject) => {
+        const img = new Image();
+        img.src = photo;
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Failed to load image'));
+      });
     });
-  });
 
-  await Promise.all(imageLoadPromises);
+    await Promise.all(imageLoadPromises);
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
 
 export const fetchPhotoAlbums = async () => {
-  const token = getAuthToken();
-  const response = await fetch(`${API_URL}/photo-album`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `${token}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error('Error fetching photo albums');
+  try {
+    const token = getAuthToken();
+    const response = await fetch(`${API_URL}/photo-album`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-  const data = await response.json();
-  return data;
 };
 
 export const getPhotoDimensions = async (
@@ -57,30 +69,42 @@ export const getPhotoDimensions = async (
 };
 
 export const deletePhotoAlbum = async (id: string) => {
-  const token = getAuthToken();
-  const response = await fetch(`${API_URL}/photo-album/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `${token}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error('Error deleting photo album');
+  try {
+    const token = getAuthToken();
+    const response = await fetch(`${API_URL}/photo-album/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-  return await response.json();
 };
 
 export const updatePhotoAlbum = async (id: string, photos: string[]) => {
-  const response = await fetch(`${API_URL}/photo-album/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ photos }),
-  });
-  if (!response.ok) {
-    throw new Error('Error updating photo album');
+  try {
+    const response = await fetch(`${API_URL}/photo-album/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ photos }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-  return await response.json();
 };
