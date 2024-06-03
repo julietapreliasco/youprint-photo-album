@@ -1,23 +1,24 @@
 import { LuLogOut } from 'react-icons/lu';
 import { useAuth } from '../../context/useAuthHook';
+import { useNavigate } from 'react-router-dom';
 
 export const Logout = () => {
   const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   if (!isAuthenticated) return null;
 
   const handleLogout = () => {
     logout();
-    window.location.href = '/login';
+    navigate('/login');
   };
 
   return (
-    <button
-      className="flex flex-grow items-center justify-end gap-2 text-xs md:text-sm"
-      onClick={handleLogout}
-    >
-      <LuLogOut color="#10abbb" />
+    <div className="flex flex-grow items-center justify-end gap-2 text-xs md:text-sm">
+      <button onClick={handleLogout}>
+        <LuLogOut color="#10abbb" />
+      </button>
       <span>Salir</span>
-    </button>
+    </div>
   );
 };

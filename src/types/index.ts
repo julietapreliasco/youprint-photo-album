@@ -1,11 +1,4 @@
-import { UniqueIdentifier } from '@dnd-kit/core';
 import { Photo, RenderPhotoProps } from 'react-photo-album';
-
-export interface SortablePhoto extends Photo {
-  id: UniqueIdentifier;
-  isCover?: boolean;
-  number?: number;
-}
 
 export type PhotoFrameProps = SortablePhotoProps & {
   overlay?: boolean;
@@ -15,9 +8,10 @@ export type PhotoFrameProps = SortablePhotoProps & {
   listeners?: Partial<React.HTMLAttributes<HTMLDivElement>>;
   isCover?: boolean;
   number?: number;
+  onLoad?: (id: string) => void;
 };
 
-export type SortablePhotoProps = RenderPhotoProps<SortablePhoto>;
+export type SortablePhotoProps = RenderPhotoProps<ExtendedPhoto>;
 
 export interface ExtendedPhoto extends Photo {
   id: string;

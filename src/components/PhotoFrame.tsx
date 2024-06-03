@@ -18,6 +18,7 @@ const PhotoFrame = React.memo(
         listeners,
         isCover,
         number,
+        onLoad,
       } = props;
       const { alt, style, ...restImageProps } = imageProps;
       const [loaded, setLoaded] = useState(false);
@@ -29,6 +30,11 @@ const PhotoFrame = React.memo(
         openModal('¿Desea eliminar esta foto?', () =>
           deletePhoto(imageProps.src)
         );
+      };
+
+      const handleLoad = () => {
+        onLoad && onLoad;
+        setLoaded(true);
       };
 
       return (
@@ -58,7 +64,7 @@ const PhotoFrame = React.memo(
                     ? 'react-photo-album--photo-cover'
                     : 'react-photo-album--photo'
                 }
-                onLoad={() => setLoaded(true)}
+                onLoad={handleLoad}
                 loading="lazy"
               />
               {isCover && loaded && (

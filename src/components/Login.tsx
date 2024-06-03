@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useAuth } from '../context/useAuthHook';
 import { loginRequest } from '../services/authService';
 import { Button } from './ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,8 +19,8 @@ export const Login = () => {
 
       if (response) {
         if (response.token) {
-          login(response?.token);
-          window.location.href = '/';
+          login(response.token);
+          navigate('/');
         }
 
         if (response.error) {
