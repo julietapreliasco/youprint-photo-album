@@ -75,18 +75,19 @@ export const Gallery = () => {
           const photoAlbum = await fetchPhotoAlbumById(id);
           setClient(photoAlbum.client);
           handlePhotoAlbum(id, photoAlbum.photos, false, client);
-          setLoading(false);
         } catch (error) {
           if (error instanceof Error) {
             setError(error.message);
           } else {
             setError('An unknown error occurred');
           }
+        } finally {
           setLoading(false);
         }
       }
     };
     getPhotoAlbum();
+
     return () => {
       setPhotos([]);
     };
