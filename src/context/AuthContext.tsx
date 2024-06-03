@@ -17,13 +17,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = (token: string) => {
-    localStorage.setItem('token', token);
     setIsAuthenticated(true);
+    localStorage.setItem('token', token);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
     setIsAuthenticated(false);
+    localStorage.removeItem('token');
   };
 
   return (

@@ -38,10 +38,11 @@ export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
   const { photos, setPhotos, handlePhotoAlbum } = usePhotoContext();
-
-  const { openModal } = useModal();
   const { setLoading, setError } = useRequest();
+  const { openModal } = useModal();
   const { isAuthenticated } = useAuth();
+  const [imagesLoaded, setImagesLoaded] = useState(0);
+
   const [client, setClient] = useState<{ name?: string; phone: string }>({
     name: '',
     phone: '',
@@ -56,6 +57,7 @@ export const Gallery = () => {
   };
 
   const renderedPhotos = useRef<{ [key: string]: SortablePhotoProps }>({});
+  const loadedImages = useRef<Set<string>>(new Set());
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
@@ -110,23 +112,45 @@ export const Gallery = () => {
     []
   );
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
 
-    if (over && active.id !== over.id) {
-      setPhotos((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
+      if (over && active.id !== over.id) {
+        setPhotos((items) => {
+          const oldIndex = items.findIndex((item) => item.id === active.id);
+          const newIndex = items.findIndex((item) => item.id === over.id);
 
-        const newItems = arrayMove(items, oldIndex, newIndex);
-        return updateIsCover(newItems);
-      });
-    } else {
-      setPhotos((items) => updateIsCover(items));
+          const newItems = arrayMove(items, oldIndex, newIndex);
+          return updateIsCover(newItems);
+        });
+      } else {
+        setPhotos((items) => updateIsCover(items));
+      }
+
+      setActiveId(undefined);
+    },
+    [setPhotos]
+  );
+
+  const handleImageLoad = (id: string) => {
+    if (!loadedImages.current.has(id)) {
+      loadedImages.current.add(id);
+      setImagesLoaded((prev) => prev + 1);
     }
+  };
 
-    setActiveId(undefined);
+  useEffect(() => {
+    setLoading(true);
+    if (imagesLoaded > 0) {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    setImagesLoaded(0);
+    loadedImages.current = new Set();
+  }, [photos]);
 
   const renderPhoto = (props: SortablePhotoProps) => {
     renderedPhotos.current[props.photo.id] = props;
@@ -213,7 +237,11 @@ export const Gallery = () => {
         </SortableContext>
         <DragOverlay>
           {activeId && (
-            <PhotoFrame overlay {...renderedPhotos.current[activeId]} />
+            <PhotoFrame
+              onLoad={handleImageLoad}
+              overlay
+              {...renderedPhotos.current[activeId]}
+            />
           )}
         </DragOverlay>
       </DndContext>
