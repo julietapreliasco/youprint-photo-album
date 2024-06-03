@@ -1,5 +1,9 @@
 const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
+const getAuthToken = () => {
+  return localStorage.getItem('token');
+};
+
 export const fetchPhotoAlbumById = async (id: string) => {
   const response = await fetch(`${API_URL}/photo-album/${id}`);
   if (!response.ok) {
@@ -10,7 +14,14 @@ export const fetchPhotoAlbumById = async (id: string) => {
 };
 
 export const fetchPhotoAlbums = async () => {
-  const response = await fetch(`${API_URL}/photo-album`);
+  const token = getAuthToken();
+  const response = await fetch(`${API_URL}/photo-album`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `${token}`,
+    },
+  });
   if (!response.ok) {
     throw new Error('Error fetching photo albums');
   }
@@ -34,8 +45,13 @@ export const getPhotoDimensions = async (
 };
 
 export const deletePhotoAlbum = async (id: string) => {
+  const token = getAuthToken();
   const response = await fetch(`${API_URL}/photo-album/${id}`, {
     method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `${token}`,
+    },
   });
   if (!response.ok) {
     throw new Error('Error deleting photo album');
