@@ -1,10 +1,11 @@
 import { IoIosArrowBack } from 'react-icons/io';
 import { useAuth } from '../../context/useAuthHook';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export const BackButton = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const showButton =
     isAuthenticated && location.pathname.startsWith('/gallery');
@@ -12,7 +13,7 @@ export const BackButton = () => {
   if (!showButton) return null;
 
   const handleBack = () => {
-    window.location.href = '/';
+    navigate('/');
   };
 
   return (

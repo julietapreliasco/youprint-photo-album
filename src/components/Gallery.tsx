@@ -38,10 +38,10 @@ export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
   const { photos, setPhotos, handlePhotoAlbum } = usePhotoContext();
-
-  const { openModal } = useModal();
   const { setLoading, setError } = useRequest();
+  const { openModal } = useModal();
   const { isAuthenticated } = useAuth();
+
   const [client, setClient] = useState<{ name?: string; phone: string }>({
     name: '',
     phone: '',
@@ -75,18 +75,19 @@ export const Gallery = () => {
           const photoAlbum = await fetchPhotoAlbumById(id);
           setClient(photoAlbum.client);
           handlePhotoAlbum(id, photoAlbum.photos, false, client);
-          setLoading(false);
         } catch (error) {
           if (error instanceof Error) {
             setError(error.message);
           } else {
             setError('An unknown error occurred');
           }
+        } finally {
           setLoading(false);
         }
       }
     };
     getPhotoAlbum();
+
     return () => {
       setPhotos([]);
     };
@@ -110,23 +111,26 @@ export const Gallery = () => {
     []
   );
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
 
-    if (over && active.id !== over.id) {
-      setPhotos((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
+      if (over && active.id !== over.id) {
+        setPhotos((items) => {
+          const oldIndex = items.findIndex((item) => item.id === active.id);
+          const newIndex = items.findIndex((item) => item.id === over.id);
 
-        const newItems = arrayMove(items, oldIndex, newIndex);
-        return updateIsCover(newItems);
-      });
-    } else {
-      setPhotos((items) => updateIsCover(items));
-    }
+          const newItems = arrayMove(items, oldIndex, newIndex);
+          return updateIsCover(newItems);
+        });
+      } else {
+        setPhotos((items) => updateIsCover(items));
+      }
 
-    setActiveId(undefined);
-  }, []);
+      setActiveId(undefined);
+    },
+    [setPhotos]
+  );
 
   const renderPhoto = (props: SortablePhotoProps) => {
     renderedPhotos.current[props.photo.id] = props;
@@ -143,15 +147,14 @@ export const Gallery = () => {
     const zip = new JSZip();
 
     try {
-      const fetchPromises = photos.map((photo, index) => {
-        return fetch(photo.src)
-          .then((response) => response.blob())
-          .then((blob) => {
-            zip.file(`${index + 1}.jpeg`, blob);
-          })
-          .catch((error) => {
-            console.error('Error fetching image:', error);
-          });
+      const fetchPromises = photos.map(async (photo, index) => {
+        try {
+          const response = await fetch(photo.src);
+          const blob = await response.blob();
+          zip.file(`${index + 1}.jpeg`, blob);
+        } catch (error) {
+          console.error('Error fetching image:', error);
+        }
       });
 
       await Promise.all(fetchPromises);

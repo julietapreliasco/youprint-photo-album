@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from 'react';
+import { createContext, useState, ReactNode, useMemo } from 'react';
 
 interface RequestContextProps {
   loading: boolean;
@@ -15,9 +15,12 @@ export const RequestProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const value = useMemo(
+    () => ({ loading, error, setLoading, setError }),
+    [loading, error]
+  );
+
   return (
-    <RequestContext.Provider value={{ loading, error, setLoading, setError }}>
-      {children}
-    </RequestContext.Provider>
+    <RequestContext.Provider value={value}>{children}</RequestContext.Provider>
   );
 };
