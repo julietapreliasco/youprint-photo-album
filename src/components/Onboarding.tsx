@@ -32,7 +32,7 @@ const OnBoarding = () => {
         <div className="flex flex-col gap-2">
           <div className="text-left text-xs md:text-sm lg:text-base">
             <FaRegHandPaper className="mr-2 inline text-yp-blue md:text-xl" />
-            <span>Arrastra y soltar las fotos para ordenarlas</span>
+            <span>Arrastrar y soltar las fotos para ordenarlas</span>
           </div>
           <div className="text-left text-xs md:text-sm lg:text-base">
             <FaRegSave className="mr-2 inline text-yp-blue md:text-xl" />
