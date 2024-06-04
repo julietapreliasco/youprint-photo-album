@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   deletePhotoAlbum,
   fetchPhotoAlbums,
@@ -16,6 +16,7 @@ export const PhotoAlbumList = () => {
   const { openModal } = useModal();
   const { setLoading, setError, error } = useRequest();
   const { photoAlbums, setPhotoAlbums } = usePhotoContext();
+  const [emptyList, setEmptyList] = useState(false);
 
   useEffect(() => {
     const getPhotoAlbum = async () => {
@@ -23,6 +24,7 @@ export const PhotoAlbumList = () => {
         setLoading(true);
         const data = await fetchPhotoAlbums();
         setPhotoAlbums(data);
+        setEmptyList(data?.length === 0);
       } catch (error) {
         let errorMessage = 'An unknown error occurred';
         if (error instanceof Error) {
@@ -33,11 +35,12 @@ export const PhotoAlbumList = () => {
         setLoading(false);
       }
     };
-
     if (photoAlbums.length === 0) {
       getPhotoAlbum();
     }
-  }, [photoAlbums, setLoading, setError, setPhotoAlbums]);
+  }, [setLoading, setError, setPhotoAlbums, photoAlbums.length]);
+
+  console.log(emptyList);
 
   const handleDelete = (id: string) => {
     openModal(
@@ -66,7 +69,14 @@ export const PhotoAlbumList = () => {
   return (
     <div className="flex flex-col items-center gap-5">
       <h2 className="text-xl font-bold">Proyectos</h2>
-      {photoAlbums.map((photoAlbum) => (
+      {emptyList && (
+        <div className="p-10">
+          <p className="rounded-xl border-2 border-yp-orange p-8 text-center text-sm">
+            No hay ningún Fotolibro para gestionar actualmente
+          </p>
+        </div>
+      )}
+      {photoAlbums?.map((photoAlbum) => (
         <div
           key={photoAlbum._id}
           className="flex flex-col items-center gap-3 rounded-xl border-2 p-5 text-center text-sm hover:bg-slate-100 sm:w-3/4 sm:max-w-full sm:flex-row sm:justify-between sm:text-base lg:w-1/2"
