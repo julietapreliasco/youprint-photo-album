@@ -60,7 +60,9 @@ export const Login = () => {
       >
         {error}
       </span>
-      <Button variant="PRIMARY" message="Login" type="submit" />
+      <div className="pt-4">
+        <Button variant="PRIMARY" message="Login" type="submit" />
+      </div>
     </form>
   );
 };
