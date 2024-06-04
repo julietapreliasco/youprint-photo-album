@@ -91,7 +91,7 @@ export const deletePhotoAlbum = async (id: string) => {
 
 export const updatePhotoAlbum = async (id: string, photos: string[]) => {
   try {
-    const response = await fetch(`${API_URL}/photo-album/${id}`, {
+    const response = await fetch(`${API_URL}/photo-album/update/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
