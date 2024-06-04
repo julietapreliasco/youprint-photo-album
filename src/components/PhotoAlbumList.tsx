@@ -7,7 +7,6 @@ import { Button } from './ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { useModal } from '../context/useModalHook';
 import { useRequest } from '../context/useRequestHook';
-// import { PhotoAlbum } from '../types';
 import { usePhotoContext } from '../context/usePhotosHook';
 import { enqueueSnackbar } from 'notistack';
 
@@ -68,7 +67,7 @@ export const PhotoAlbumList = () => {
 
   return (
     <div className="flex flex-col items-center gap-5">
-      <h2 className="text-xl font-bold">Proyectos</h2>
+      <h2 className="text-2xl font-semibold">Fotolibros</h2>
       {emptyList && (
         <div className="p-10">
           <p className="rounded-xl border-2 border-yp-orange p-8 text-center text-sm">
