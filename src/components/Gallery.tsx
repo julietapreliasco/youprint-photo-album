@@ -38,7 +38,7 @@ export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
   const { photos, setPhotos, handlePhotoAlbum } = usePhotoContext();
-  const { setLoading, setError } = useRequest();
+  const { setLoading, setError, error } = useRequest();
   const { openModal } = useModal();
   const { isAuthenticated } = useAuth();
 
@@ -76,11 +76,11 @@ export const Gallery = () => {
           setClient(photoAlbum.client);
           handlePhotoAlbum(id, photoAlbum.photos, false, client);
         } catch (error) {
+          let errorMessage = 'An unknown error occurred';
           if (error instanceof Error) {
-            setError(error.message);
-          } else {
-            setError('An unknown error occurred');
+            errorMessage = error.message;
           }
+          setError({ error: true, message: errorMessage });
         } finally {
           setLoading(false);
         }
@@ -166,6 +166,8 @@ export const Gallery = () => {
       console.error('Error generating zip:', error);
     }
   };
+
+  if (error.error) return null;
 
   return (
     <>

@@ -25,11 +25,11 @@ export default function App() {
             />
             <Route path="/gallery/:id" Component={Gallery} />
           </Routes>
+          <Loader />
+          <ErrorMsg />
         </div>
       </Router>
       <ConfirmationModal />
-      <Loader />
-      <ErrorMsg />
     </AppProvider>
   );
 }
