@@ -1,10 +1,11 @@
 import { createContext, useState, ReactNode, useMemo } from 'react';
+import { ErrorType } from '../types';
 
 interface RequestContextProps {
   loading: boolean;
-  error: string | null;
+  error: ErrorType;
   setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
+  setError: (error: ErrorType) => void;
 }
 
 export const RequestContext = createContext<RequestContextProps | undefined>(
@@ -13,7 +14,10 @@ export const RequestContext = createContext<RequestContextProps | undefined>(
 
 export const RequestProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorType>({
+    error: false,
+    message: '',
+  });
 
   const value = useMemo(
     () => ({ loading, error, setLoading, setError }),

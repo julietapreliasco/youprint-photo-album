@@ -30,3 +30,8 @@ export interface PhotoAlbum {
   createdAt: Date;
   updatedAt?: Date;
 }
+
+export interface ErrorType {
+  error: boolean;
+  message: string;
+}
