@@ -139,11 +139,14 @@ export const Gallery = () => {
     return <SortablePhotoFrame activeIndex={activeIndex} {...props} />;
   };
 
-  const handleSave = (id: string, photos: string[]) => {
-    openModal('¿Desea guardar el orden de las fotos?', () => {
-      handlePhotoAlbum(id, photos, true, client);
+  const handleSave = async (
+    id: string,
+    photos: string[],
+    isAuthenticated: boolean
+  ) => {
+    openModal('¿Desea guardar el orden de las fotos?', async () => {
+      await handlePhotoAlbum(id, photos, true, client, isAuthenticated);
     });
-    !isAuthenticated && (window.location.href = `https://wa.me/59892892300`);
   };
 
   const handleAdd = () => {
@@ -186,61 +189,64 @@ export const Gallery = () => {
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={photos}>
-        <div className="m-auto flex flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
-          {cover && (
-            <div className="pb-10">
+        {photos.length !== 0 && (
+          <>
+            <div className="m-auto flex flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
+              <div className="pb-10">
+                <PhotoAlbum
+                  photos={cover}
+                  layout="rows"
+                  rowConstraints={getRowConstraints()}
+                  renderPhoto={renderPhoto}
+                  breakpoints={[500, 600, 1200]}
+                  spacing={15}
+                />
+              </div>
+              <OnBoarding />
+              <div className="flex gap-2 self-start">
+                <Button
+                  onClick={() => {
+                    if (id) {
+                      handleSave(
+                        id,
+                        photos.map((photo) => photo.id),
+                        isAuthenticated
+                      );
+                    } else {
+                      console.error('ID is undefined');
+                    }
+                  }}
+                  variant="PRIMARY"
+                  message={'Guardar'}
+                />
+                {isAuthenticated ? (
+                  <Button
+                    onClick={handleDownload}
+                    variant="SECONDARY"
+                    message={'Descargar'}
+                  />
+                ) : (
+                  <Button
+                    variant="SECONDARY"
+                    message={'Agregar fotos'}
+                    onClick={handleAdd}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="m-auto flex flex-col gap-4 md:w-[80%]">
               <PhotoAlbum
-                photos={cover}
+                photos={photos.slice(1)}
                 layout="rows"
                 rowConstraints={getRowConstraints()}
                 renderPhoto={renderPhoto}
                 breakpoints={[500, 600, 1200]}
                 spacing={15}
+                padding={1}
               />
             </div>
-          )}
-          <OnBoarding />
-          <div className="flex gap-2 self-start">
-            <Button
-              onClick={() => {
-                if (id) {
-                  handleSave(
-                    id,
-                    photos.map((photo) => photo.id)
-                  );
-                } else {
-                  console.error('ID is undefined');
-                }
-              }}
-              variant="PRIMARY"
-              message={'Guardar'}
-            />
-            {isAuthenticated ? (
-              <Button
-                onClick={handleDownload}
-                variant="SECONDARY"
-                message={'Descargar'}
-              />
-            ) : (
-              <Button
-                variant="SECONDARY"
-                message={'Agregar fotos'}
-                onClick={handleAdd}
-              />
-            )}
-          </div>
-        </div>
-        <div className="m-auto flex flex-col gap-4 md:w-[80%]">
-          <PhotoAlbum
-            photos={photos.slice(1)}
-            layout="rows"
-            rowConstraints={getRowConstraints()}
-            renderPhoto={renderPhoto}
-            breakpoints={[500, 600, 1200]}
-            spacing={15}
-            padding={1}
-          />
-        </div>
+          </>
+        )}
       </SortableContext>
       <DragOverlay>
         {activeId && (

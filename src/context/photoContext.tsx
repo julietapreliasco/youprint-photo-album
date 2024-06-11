@@ -24,7 +24,8 @@ interface PhotoContextType {
     client: {
       name?: string;
       phone: string;
-    }
+    },
+    isAuthenticated?: boolean
   ) => Promise<void>;
   deletePhoto: (photoId: string) => void;
 }
@@ -44,7 +45,8 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
       id: string,
       photoAlbum: string[],
       isUpdating: boolean,
-      client: { name?: string; phone: string }
+      client: { name?: string; phone: string },
+      isAuthenticated?: boolean
     ) => {
       try {
         if (isUpdating) {
@@ -53,6 +55,9 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
             'El orden de las fotos se ha guardado correctamente',
             { variant: 'success' }
           );
+          if (!isAuthenticated) {
+            window.location.href = `https://wa.me/59892892300`;
+          }
         }
         const photosData: ExtendedPhoto[] = await Promise.all(
           photoAlbum.map(async (url: string, index: number) => {
