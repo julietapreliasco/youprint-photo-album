@@ -41,14 +41,14 @@ export const PhotoAlbumList = () => {
 
   const handleUpdateStatus = (id: string, isPending: boolean) => {
     openModal(
-      `${isPending ? '¿Desea dar por finalizado el fotolibro?' : '¿Desea volver a inicializar el fotolibro?'}`,
+      `${isPending ? '¿Desea dar por finalizado el fotolibro?' : '¿Desea volver a habilitar la edición del fotolibro?'}`,
       async () => {
         try {
           await updatePhotoAlbumStatus(id);
           const data = await fetchPhotoAlbums();
           setPhotoAlbums(data);
           enqueueSnackbar(
-            `${isPending ? 'Fotolibro finalizado con éxito' : 'Fotolibro inicializado con éxito'}`,
+            `${isPending ? 'Fotolibro finalizado con éxito' : 'Fotolibro habilitado con éxito'}`,
             {
               variant: 'success',
             }
