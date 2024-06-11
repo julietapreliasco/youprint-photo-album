@@ -9,6 +9,8 @@ export default {
         'yp-blue': '#10abbb',
         'yp-secondary-blue': '#0c6d78',
         'yp-red': '#f15156',
+        'disabled-grey': '#999490',
+        'disabled-grey-hover': '#7a7774',
       },
     },
   },

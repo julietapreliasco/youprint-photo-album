@@ -108,3 +108,25 @@ export const updatePhotoAlbum = async (id: string, photos: string[]) => {
     throw error;
   }
 };
+
+export const updatePhotoAlbumStatus = async (id: string) => {
+  try {
+    const token = getAuthToken();
+
+    const response = await fetch(`${API_URL}/photo-album/status/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};

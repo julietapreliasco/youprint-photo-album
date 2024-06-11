@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
-  deletePhotoAlbum,
   fetchPhotoAlbums,
+  updatePhotoAlbumStatus,
 } from '../services/photoAlbumService';
 import { Button } from './ui/Button';
 import { useNavigate } from 'react-router-dom';
@@ -39,21 +39,23 @@ export const PhotoAlbumList = () => {
     }
   }, [setLoading, setError, setPhotoAlbums, photoAlbums.length]);
 
-  const handleDelete = (id: string) => {
+  const handleUpdateStatus = (id: string, isPending: boolean) => {
     openModal(
-      'Atención! Se va a borrar permanentemente la galería del cliente',
+      `${isPending ? '¿Desea dar por finalizado el fotolibro?' : '¿Desea volver a inicializar el fotolibro?'}`,
       async () => {
         try {
-          await deletePhotoAlbum(id);
-          setPhotoAlbums((prevPhotos) =>
-            prevPhotos.filter((photo) => photo._id !== id)
+          await updatePhotoAlbumStatus(id);
+          const data = await fetchPhotoAlbums();
+          setPhotoAlbums(data);
+          enqueueSnackbar(
+            `${isPending ? 'Fotolibro finalizado con éxito' : 'Fotolibro inicializado con éxito'}`,
+            {
+              variant: 'success',
+            }
           );
-          enqueueSnackbar('Fotolibro borrado con éxito', {
-            variant: 'success',
-          });
         } catch (error) {
-          console.error('Error deleting photo album:', error);
-          enqueueSnackbar(`Error al borrar el Fotolibro: ${error}`, {
+          console.error('Error updating photo album:', error);
+          enqueueSnackbar(`Error al actualizar el Fotolibro: ${error}`, {
             variant: 'error',
           });
         }
@@ -62,6 +64,10 @@ export const PhotoAlbumList = () => {
   };
 
   if (error.error) return null;
+
+  const sortedPhotoAlbums = [...photoAlbums].sort((a, b) => {
+    return a.isPending === b.isPending ? 0 : a.isPending ? -1 : 1;
+  });
 
   return (
     <div className="flex flex-col items-center gap-5">
@@ -73,7 +79,7 @@ export const PhotoAlbumList = () => {
           </p>
         </div>
       )}
-      {photoAlbums?.map((photoAlbum) => (
+      {sortedPhotoAlbums?.map((photoAlbum) => (
         <div
           key={photoAlbum._id}
           className="flex flex-col items-center gap-3 rounded-xl border-2 p-5 text-center text-sm hover:bg-slate-100 sm:w-3/4 sm:max-w-full sm:flex-row sm:justify-between sm:text-base lg:w-1/2"
@@ -91,10 +97,22 @@ export const PhotoAlbumList = () => {
               message="Galería"
               onClick={() => navigate(`/gallery/${photoAlbum._id}`)}
             />
-            <Button
-              message="Eliminar"
-              onClick={() => handleDelete(photoAlbum._id)}
-            />
+            {photoAlbum.isPending ? (
+              <Button
+                message="Finalizar"
+                onClick={() =>
+                  handleUpdateStatus(photoAlbum._id, photoAlbum.isPending)
+                }
+              />
+            ) : (
+              <Button
+                variant="DISABLED"
+                message="Finalizado"
+                onClick={() =>
+                  handleUpdateStatus(photoAlbum._id, photoAlbum.isPending)
+                }
+              />
+            )}
           </div>
         </div>
       ))}

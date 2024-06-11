@@ -33,6 +33,7 @@ import { useRequest } from '../context/useRequestHook';
 import OnBoarding from './Onboarding';
 import { usePhotoContext } from '../context/usePhotosHook';
 import { useAuth } from '../context/useAuthHook';
+import { FaExclamationCircle } from 'react-icons/fa';
 
 export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,6 +42,7 @@ export const Gallery = () => {
   const { setLoading, setError, error } = useRequest();
   const { openModal } = useModal();
   const { isAuthenticated } = useAuth();
+  const [photoAlbumStatus, setPhotoAlbumStatus] = useState();
 
   const [client, setClient] = useState<{ name?: string; phone: string }>({
     name: '',
@@ -76,6 +78,7 @@ export const Gallery = () => {
           setLoading(true);
           const photoAlbum = await fetchPhotoAlbumById(id);
           setClient(photoAlbum.client);
+          setPhotoAlbumStatus(photoAlbum.isPending);
           handlePhotoAlbum(id, photoAlbum.photos, false, client);
         } catch (error) {
           let errorMessage = 'An unknown error occurred';
@@ -136,7 +139,13 @@ export const Gallery = () => {
 
   const renderPhoto = (props: SortablePhotoProps) => {
     renderedPhotos.current[props.photo.id] = props;
-    return <SortablePhotoFrame activeIndex={activeIndex} {...props} />;
+    return (
+      <SortablePhotoFrame
+        activeIndex={activeIndex}
+        {...props}
+        photoAlbumStatus={photoAlbumStatus}
+      />
+    );
   };
 
   const handleSave = async (
@@ -202,37 +211,48 @@ export const Gallery = () => {
                   spacing={15}
                 />
               </div>
-              <OnBoarding />
-              <div className="flex gap-2 self-start">
-                <Button
-                  onClick={() => {
-                    if (id) {
-                      handleSave(
-                        id,
-                        photos.map((photo) => photo.id),
-                        isAuthenticated
-                      );
-                    } else {
-                      console.error('ID is undefined');
-                    }
-                  }}
-                  variant="PRIMARY"
-                  message={'Guardar'}
-                />
-                {isAuthenticated ? (
-                  <Button
-                    onClick={handleDownload}
-                    variant="SECONDARY"
-                    message={'Descargar'}
-                  />
-                ) : (
-                  <Button
-                    variant="SECONDARY"
-                    message={'Agregar fotos'}
-                    onClick={handleAdd}
-                  />
-                )}
-              </div>
+              {photoAlbumStatus ? (
+                <>
+                  <OnBoarding />
+                  <div className="flex gap-2 self-start">
+                    <Button
+                      onClick={() => {
+                        if (id) {
+                          handleSave(
+                            id,
+                            photos.map((photo) => photo.id),
+                            isAuthenticated
+                          );
+                        } else {
+                          console.error('ID is undefined');
+                        }
+                      }}
+                      variant="PRIMARY"
+                      message={'Guardar'}
+                    />
+                    {isAuthenticated ? (
+                      <Button
+                        onClick={handleDownload}
+                        variant="SECONDARY"
+                        message={'Descargar'}
+                      />
+                    ) : (
+                      <Button
+                        variant="SECONDARY"
+                        message={'Agregar fotos'}
+                        onClick={handleAdd}
+                      />
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="flex">
+                  <FaExclamationCircle className="mr-2 text-lg text-yp-blue" />
+                  <p className="text-sm">
+                    El fotolibro se encuentra en estado finalizado.
+                  </p>
+                </div>
+              )}
             </div>
             <div className="m-auto flex flex-col gap-4 md:w-[80%]">
               <PhotoAlbum
