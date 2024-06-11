@@ -19,6 +19,7 @@ const PhotoFrame = React.memo(
         isCover,
         number,
         onLoad,
+        photoAlbumStatus,
       } = props;
       const { alt, style, ...restImageProps } = imageProps;
       const [loaded, setLoaded] = useState(false);
@@ -77,12 +78,16 @@ const PhotoFrame = React.memo(
                   <p className="absolute bottom-3 left-2 rounded text-xs font-bold text-white drop-shadow-2xl sm:left-3 sm:text-sm lg:bottom-4 lg:left-4 lg:text-base xl:text-lg">
                     {number && !isCover ? number : null}
                   </p>
-                  <button
-                    onClick={handleDelete}
-                    className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded  bg-black bg-opacity-40 px-1 py-1 text-xs text-white sm:right-3 sm:text-sm lg:right-4 lg:top-4 lg:text-base xl:text-lg"
-                  >
-                    <FaTrashAlt />
-                  </button>
+                  {photoAlbumStatus && (
+                    <>
+                      <button
+                        onClick={handleDelete}
+                        className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded  bg-black bg-opacity-40 px-1 py-1 text-xs text-white sm:right-3 sm:text-sm lg:right-4 lg:top-4 lg:text-base xl:text-lg"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    </>
+                  )}
                 </>
               )}
             </div>

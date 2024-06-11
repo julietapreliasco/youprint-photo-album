@@ -9,6 +9,7 @@ export type PhotoFrameProps = SortablePhotoProps & {
   isCover?: boolean;
   number?: number;
   onLoad?: (id: string) => void;
+  photoAlbumStatus?: boolean;
 };
 
 export type SortablePhotoProps = RenderPhotoProps<ExtendedPhoto>;
@@ -29,6 +30,7 @@ export interface PhotoAlbum {
   };
   createdAt: Date;
   updatedAt?: Date;
+  isPending: boolean;
 }
 
 export interface ErrorType {

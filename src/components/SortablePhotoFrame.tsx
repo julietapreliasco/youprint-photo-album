@@ -3,9 +3,12 @@ import { useSortable } from '@dnd-kit/sortable';
 import { SortablePhotoProps } from '../types';
 
 function SortablePhotoFrame(
-  props: SortablePhotoProps & { activeIndex?: number }
+  props: SortablePhotoProps & {
+    activeIndex?: number;
+    photoAlbumStatus?: boolean;
+  }
 ) {
-  const { photo, activeIndex } = props;
+  const { photo, activeIndex, photoAlbumStatus } = props;
   const { attributes, listeners, isDragging, index, over, setNodeRef } =
     useSortable({ id: photo.id });
 
@@ -25,6 +28,7 @@ function SortablePhotoFrame(
       aria-label="sortable image"
       attributes={attributes}
       listeners={listeners}
+      photoAlbumStatus={photoAlbumStatus}
       {...props}
     />
   );
