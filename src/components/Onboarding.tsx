@@ -44,7 +44,7 @@ const OnBoarding = () => {
             <FaTrashAlt className="mr-2 inline text-yp-blue md:text-xl" />
             <span>
               Una vez guardados los cambios, no se podrán recuperar las fotos
-              borradas
+              borradas y se volverá a whatsapp
             </span>
           </div>
           <div className="text-left text-xs md:text-sm lg:text-base">

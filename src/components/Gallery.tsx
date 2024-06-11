@@ -50,8 +50,10 @@ export const Gallery = () => {
   const getRowConstraints = () => {
     if (width < 500) {
       return { minPhotos: 1, maxPhotos: 2 };
-    } else {
+    } else if (width < 1200) {
       return { minPhotos: 1, maxPhotos: 3 };
+    } else {
+      return { minPhotos: 1, maxPhotos: 4 };
     }
   };
 
@@ -141,6 +143,11 @@ export const Gallery = () => {
     openModal('¿Desea guardar el orden de las fotos?', () => {
       handlePhotoAlbum(id, photos, true, client);
     });
+    !isAuthenticated && (window.location.href = `https://wa.me/59892892300`);
+  };
+
+  const handleAdd = () => {
+    window.location.href = `https://wa.me/59892892300`;
   };
 
   const handleDownload = async () => {
@@ -151,7 +158,7 @@ export const Gallery = () => {
         try {
           const response = await fetch(photo.src);
           const blob = await response.blob();
-          zip.file(`${index + 1}.jpeg`, blob);
+          zip.file(`${index == 0 ? 'portada' : index}.jpeg`, blob);
         } catch (error) {
           console.error('Error fetching image:', error);
         }
@@ -169,59 +176,77 @@ export const Gallery = () => {
 
   if (error.error) return null;
 
+  const cover = photos[0] ? [photos[0]] : [];
+
   return (
-    <>
-      <div className="m-auto flex flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
-        <OnBoarding />
-        <div className="flex gap-2 self-start">
-          <Button
-            onClick={() => {
-              if (id) {
-                handleSave(
-                  id,
-                  photos.map((photo) => photo.id)
-                );
-              } else {
-                console.error('ID is undefined');
-              }
-            }}
-            variant="PRIMARY"
-            message={'Guardar'}
-          ></Button>
-          {isAuthenticated && (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={photos}>
+        <div className="m-auto flex flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
+          {cover && (
+            <div className="pb-10">
+              <PhotoAlbum
+                photos={cover}
+                layout="rows"
+                rowConstraints={getRowConstraints()}
+                renderPhoto={renderPhoto}
+                breakpoints={[500, 600, 1200]}
+                spacing={15}
+              />
+            </div>
+          )}
+          <OnBoarding />
+          <div className="flex gap-2 self-start">
             <Button
-              onClick={handleDownload}
-              variant="SECONDARY"
-              message={'Descargar'}
-            ></Button>
-          )}
-        </div>
-      </div>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={photos}>
-          <div className="m-auto md:w-[80%]">
-            <PhotoAlbum
-              photos={photos}
-              layout="rows"
-              rowConstraints={getRowConstraints()}
-              renderPhoto={renderPhoto}
-              breakpoints={[500, 600, 1200]}
-              spacing={15}
-              padding={1}
+              onClick={() => {
+                if (id) {
+                  handleSave(
+                    id,
+                    photos.map((photo) => photo.id)
+                  );
+                } else {
+                  console.error('ID is undefined');
+                }
+              }}
+              variant="PRIMARY"
+              message={'Guardar'}
             />
+            {isAuthenticated ? (
+              <Button
+                onClick={handleDownload}
+                variant="SECONDARY"
+                message={'Descargar'}
+              />
+            ) : (
+              <Button
+                variant="SECONDARY"
+                message={'Agregar fotos'}
+                onClick={handleAdd}
+              />
+            )}
           </div>
-        </SortableContext>
-        <DragOverlay>
-          {activeId && (
-            <PhotoFrame overlay {...renderedPhotos.current[activeId]} />
-          )}
-        </DragOverlay>
-      </DndContext>
-    </>
+        </div>
+        <div className="m-auto flex flex-col gap-4 md:w-[80%]">
+          <PhotoAlbum
+            photos={photos.slice(1)}
+            layout="rows"
+            rowConstraints={getRowConstraints()}
+            renderPhoto={renderPhoto}
+            breakpoints={[500, 600, 1200]}
+            spacing={15}
+            padding={1}
+          />
+        </div>
+      </SortableContext>
+      <DragOverlay>
+        {activeId && (
+          <PhotoFrame overlay {...renderedPhotos.current[activeId]} />
+        )}
+      </DragOverlay>
+    </DndContext>
   );
 };

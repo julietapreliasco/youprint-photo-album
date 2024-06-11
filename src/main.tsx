@@ -5,7 +5,7 @@ import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <main className="flex max-h-screen  min-h-screen flex-col bg-slate-50">
+    <main className="flex min-h-screen flex-col bg-slate-50">
       <App />
     </main>
   </React.StrictMode>
