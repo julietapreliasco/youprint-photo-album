@@ -4,6 +4,7 @@ import React, {
   ReactNode,
   useCallback,
   useMemo,
+  useEffect,
 } from 'react';
 import { ExtendedPhoto, PhotoAlbum } from '../types';
 import {
@@ -39,6 +40,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
   const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
   const [photoAlbums, setPhotoAlbums] = useState<PhotoAlbum[]>([]);
   const { setLoading } = useRequest();
+  const [isFirstImageLoaded, setIsFirstImageLoaded] = useState(false);
 
   const handlePhotoAlbum = useCallback(
     async (
@@ -127,6 +129,20 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
     },
     [updatePhotoNumbers]
   );
+
+  useEffect(() => {
+    if (photos.length > 0 && !isFirstImageLoaded) {
+      const img = new Image();
+      img.src = photos[0].src;
+      img.onload = () => setIsFirstImageLoaded(true);
+    }
+  }, [photos, isFirstImageLoaded]);
+
+  useEffect(() => {
+    if (isFirstImageLoaded) {
+      setLoading(false);
+    }
+  }, [isFirstImageLoaded, setLoading]);
 
   const value = useMemo(
     () => ({

@@ -4,6 +4,7 @@ import { PhotoFrameProps } from '../types';
 import { FaTrashAlt } from 'react-icons/fa';
 import { useModal } from '../context/useModalHook';
 import { usePhotoContext } from '../context/usePhotosHook';
+import { useRequest } from '../context/useRequestHook';
 
 const PhotoFrame = React.memo(
   React.forwardRef<HTMLDivElement, PhotoFrameProps>(
@@ -26,6 +27,7 @@ const PhotoFrame = React.memo(
       const [loaded, setLoaded] = useState(false);
       const { deletePhoto } = usePhotoContext();
       const { openModal } = useModal();
+      const { setLoading } = useRequest();
 
       const handleDelete = () => {
         openModal('¿Desea eliminar esta foto?', () =>
@@ -36,6 +38,7 @@ const PhotoFrame = React.memo(
       const handleLoad = () => {
         onLoad && onLoad;
         setLoaded(true);
+        setLoading(false);
       };
 
       return (
