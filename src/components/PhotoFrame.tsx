@@ -22,9 +22,9 @@ const PhotoFrame = React.memo(
         photoAlbumStatus,
       } = props;
       const { alt, style, ...restImageProps } = imageProps;
+
       const [loaded, setLoaded] = useState(false);
       const { deletePhoto } = usePhotoContext();
-
       const { openModal } = useModal();
 
       const handleDelete = () => {
@@ -59,6 +59,14 @@ const PhotoFrame = React.memo(
             <div>
               <img
                 alt={alt}
+                sizes="(max-width: 48px) 48px,
+                (max-width: 64px) 64px,
+                (max-width: 96px) 96px,
+                (max-width: 128px) 128px,
+                (max-width: 256px) 256px,
+                (max-width: 384px) 384px,
+                (max-width: 640px) 640px,
+                (min-width: 641px) 1080px"
                 {...restImageProps}
                 className={
                   isCover && loaded

@@ -61,24 +61,45 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
         }
         const photosData: ExtendedPhoto[] = await Promise.all(
           photoAlbum.map(async (url: string, index: number) => {
-            const { width, height } = await getPhotoDimensions(url);
-            return {
-              src: url,
-              width,
-              height,
-              srcSet: breakpoints.map((breakpoint) => {
-                const newHeight = Math.round((height / width) * breakpoint);
-                return {
-                  src: `${url}?w=${breakpoint}&h=${newHeight}`,
+            try {
+              const { width, height } = await getPhotoDimensions(url);
+              return {
+                src: url,
+                width,
+                height,
+                srcSet: breakpoints.map((breakpoint) => {
+                  const newHeight = Math.round((height / width) * breakpoint);
+                  return {
+                    src: `${url}&w=${breakpoint}&h=${newHeight}`,
+                    width: breakpoint,
+                    height: newHeight,
+                  };
+                }),
+                id: url,
+                isCover: index === 0,
+                number: index,
+                client: client,
+              };
+            } catch (error) {
+              console.error(
+                `Error al obtener dimensiones de la foto ${url}:`,
+                error
+              );
+              return {
+                src: url,
+                width: 1, // Valores por defecto en caso de error
+                height: 1,
+                srcSet: breakpoints.map((breakpoint) => ({
+                  src: `${url}?w=${breakpoint}&h=${breakpoint}`,
                   width: breakpoint,
-                  height: newHeight,
-                };
-              }),
-              id: url,
-              isCover: index === 0,
-              number: index,
-              client: client,
-            };
+                  height: breakpoint,
+                })),
+                id: url,
+                isCover: index === 0,
+                number: index,
+                client: client,
+              };
+            }
           })
         );
         setPhotos(photosData);

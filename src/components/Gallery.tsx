@@ -42,7 +42,9 @@ export const Gallery = () => {
   const { setLoading, setError, error } = useRequest();
   const { openModal } = useModal();
   const { isAuthenticated } = useAuth();
-  const [photoAlbumStatus, setPhotoAlbumStatus] = useState();
+  const [photoAlbumStatus, setPhotoAlbumStatus] = useState<boolean | undefined>(
+    undefined
+  );
 
   const [client, setClient] = useState<{ name?: string; phone: string }>({
     name: '',
@@ -79,7 +81,12 @@ export const Gallery = () => {
           const photoAlbum = await fetchPhotoAlbumById(id);
           setClient(photoAlbum.client);
           setPhotoAlbumStatus(photoAlbum.isPending);
-          handlePhotoAlbum(id, photoAlbum.photos, false, client);
+          await handlePhotoAlbum(
+            id,
+            photoAlbum.photos,
+            false,
+            photoAlbum.client
+          );
         } catch (error) {
           let errorMessage = 'An unknown error occurred';
           if (error instanceof Error) {
@@ -141,6 +148,7 @@ export const Gallery = () => {
     renderedPhotos.current[props.photo.id] = props;
     return (
       <SortablePhotoFrame
+        key={props.photo.id}
         activeIndex={activeIndex}
         {...props}
         photoAlbumStatus={photoAlbumStatus}
