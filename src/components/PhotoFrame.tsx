@@ -22,9 +22,9 @@ const PhotoFrame = React.memo(
         photoAlbumStatus,
       } = props;
       const { alt, style, ...restImageProps } = imageProps;
+
       const [loaded, setLoaded] = useState(false);
       const { deletePhoto } = usePhotoContext();
-
       const { openModal } = useModal();
 
       const handleDelete = () => {
@@ -66,7 +66,7 @@ const PhotoFrame = React.memo(
                     : 'react-photo-album--photo'
                 }
                 onLoad={handleLoad}
-                loading="lazy"
+                loading={isCover ? 'eager' : 'lazy'}
               />
               {isCover && loaded && (
                 <p className="absolute left-2 top-3 m-0 max-w-full truncate rounded bg-black bg-opacity-70 px-1 py-0.5 text-[10px] text-white sm:left-3 sm:px-2 sm:py-1 sm:text-sm lg:left-4 lg:top-4 lg:text-base xl:text-lg">

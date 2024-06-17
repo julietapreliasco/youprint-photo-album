@@ -11,6 +11,7 @@ import {
   getPhotoDimensions,
 } from '../services/photoAlbumService';
 import { enqueueSnackbar } from 'notistack';
+import { useRequest } from './useRequestHook';
 
 interface PhotoContextType {
   photos: ExtendedPhoto[];
@@ -26,7 +27,7 @@ interface PhotoContextType {
       phone: string;
     },
     isAuthenticated?: boolean
-  ) => Promise<void>;
+  ) => void;
   deletePhoto: (photoId: string) => void;
 }
 
@@ -34,11 +35,10 @@ export const PhotoContext = createContext<PhotoContextType | undefined>(
   undefined
 );
 
-const breakpoints = [1080, 640, 384, 256, 128, 96, 64, 48];
-
 export const PhotoProvider = ({ children }: { children: ReactNode }) => {
   const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
   const [photoAlbums, setPhotoAlbums] = useState<PhotoAlbum[]>([]);
+  const { setLoading } = useRequest();
 
   const handlePhotoAlbum = useCallback(
     async (
@@ -59,35 +59,49 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
             window.location.href = `https://wa.me/59892892300`;
           }
         }
-        const photosData: ExtendedPhoto[] = await Promise.all(
-          photoAlbum.map(async (url: string, index: number) => {
-            const { width, height } = await getPhotoDimensions(url);
-            return {
-              src: url,
-              width,
-              height,
-              srcSet: breakpoints.map((breakpoint) => {
-                const newHeight = Math.round((height / width) * breakpoint);
-                return {
-                  src: `${url}?w=${breakpoint}&h=${newHeight}`,
-                  width: breakpoint,
-                  height: newHeight,
-                };
-              }),
-              id: url,
-              isCover: index === 0,
-              number: index,
-              client: client,
-            };
+
+        const photosData: ExtendedPhoto[] = [];
+        await Promise.all(
+          photoAlbum.map(async (url, index) => {
+            try {
+              setLoading(true);
+              const { width, height } = await getPhotoDimensions(url);
+              photosData.push({
+                src: url,
+                width,
+                height,
+                id: url,
+                isCover: index === 0,
+                number: index,
+                client: client,
+              });
+            } catch (error) {
+              console.error(
+                `Error al obtener dimensiones de la foto ${url}:`,
+                error
+              );
+              photosData.push({
+                src: url,
+                width: 1,
+                height: 1,
+                id: url,
+                isCover: index === 0,
+                number: index,
+                client: client,
+              });
+            }
           })
         );
-        setPhotos(photosData);
+        const sortedPhotosData = photosData.sort((a, b) => a.number - b.number);
+        setPhotos(sortedPhotosData);
       } catch (error) {
         console.error('Error al actualizar el álbum de fotos:', error);
         isUpdating &&
           enqueueSnackbar(`Error al guardar el orden de las fotos: ${error}`, {
             variant: 'error',
           });
+      } finally {
+        setLoading(false);
       }
     },
     []

@@ -39,10 +39,12 @@ export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
   const { photos, setPhotos, handlePhotoAlbum } = usePhotoContext();
-  const { setLoading, setError, error } = useRequest();
+  const { setError, error } = useRequest();
   const { openModal } = useModal();
   const { isAuthenticated } = useAuth();
-  const [photoAlbumStatus, setPhotoAlbumStatus] = useState();
+  const [photoAlbumStatus, setPhotoAlbumStatus] = useState<boolean | undefined>(
+    undefined
+  );
 
   const [client, setClient] = useState<{ name?: string; phone: string }>({
     name: '',
@@ -75,19 +77,21 @@ export const Gallery = () => {
     const getPhotoAlbum = async () => {
       if (id) {
         try {
-          setLoading(true);
           const photoAlbum = await fetchPhotoAlbumById(id);
           setClient(photoAlbum.client);
           setPhotoAlbumStatus(photoAlbum.isPending);
-          handlePhotoAlbum(id, photoAlbum.photos, false, client);
+          await handlePhotoAlbum(
+            id,
+            photoAlbum.photos,
+            false,
+            photoAlbum.client
+          );
         } catch (error) {
           let errorMessage = 'An unknown error occurred';
           if (error instanceof Error) {
             errorMessage = error.message;
           }
           setError({ error: true, message: errorMessage });
-        } finally {
-          setLoading(false);
         }
       }
     };
@@ -141,6 +145,7 @@ export const Gallery = () => {
     renderedPhotos.current[props.photo.id] = props;
     return (
       <SortablePhotoFrame
+        key={props.photo.id}
         activeIndex={activeIndex}
         {...props}
         photoAlbumStatus={photoAlbumStatus}
@@ -198,7 +203,7 @@ export const Gallery = () => {
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={photos}>
-        {photos.length !== 0 && (
+        {cover?.length !== 0 && (
           <>
             <div className="m-auto flex flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
               <div className="pb-10">
