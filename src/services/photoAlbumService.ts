@@ -13,16 +13,14 @@ export const fetchPhotoAlbumById = async (id: string) => {
     }
     const data = await response.json();
 
-    const imageLoadPromises = data.photos.map((photo: string) => {
-      return new Promise<void>((resolve, reject) => {
+    for (const photo of data.photos) {
+      await new Promise<void>((resolve, reject) => {
         const img = new Image();
         img.src = photo;
         img.onload = () => resolve();
         img.onerror = () => reject(new Error('Failed to load image'));
       });
-    });
-
-    await Promise.all(imageLoadPromises);
+    }
 
     return data;
   } catch (error) {

@@ -59,14 +59,6 @@ const PhotoFrame = React.memo(
             <div>
               <img
                 alt={alt}
-                sizes="(max-width: 48px) 48px,
-                (max-width: 64px) 64px,
-                (max-width: 96px) 96px,
-                (max-width: 128px) 128px,
-                (max-width: 256px) 256px,
-                (max-width: 384px) 384px,
-                (max-width: 640px) 640px,
-                (min-width: 641px) 1080px"
                 {...restImageProps}
                 className={
                   isCover && loaded
@@ -74,7 +66,7 @@ const PhotoFrame = React.memo(
                     : 'react-photo-album--photo'
                 }
                 onLoad={handleLoad}
-                loading="lazy"
+                loading={isCover ? 'eager' : 'lazy'}
               />
               {isCover && loaded && (
                 <p className="absolute left-2 top-3 m-0 max-w-full truncate rounded bg-black bg-opacity-70 px-1 py-0.5 text-[10px] text-white sm:left-3 sm:px-2 sm:py-1 sm:text-sm lg:left-4 lg:top-4 lg:text-base xl:text-lg">
