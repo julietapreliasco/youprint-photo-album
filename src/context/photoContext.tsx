@@ -16,6 +16,8 @@ import { useRequest } from './useRequestHook';
 interface PhotoContextType {
   photos: ExtendedPhoto[];
   photoAlbums: PhotoAlbum[];
+  isLoadingMorePhotos: boolean;
+  setLoadingMorePhotos: React.Dispatch<React.SetStateAction<boolean>>;
   setPhotoAlbums: React.Dispatch<React.SetStateAction<PhotoAlbum[]>>;
   setPhotos: React.Dispatch<React.SetStateAction<ExtendedPhoto[]>>;
   handlePhotoAlbum: (
@@ -38,6 +40,7 @@ export const PhotoContext = createContext<PhotoContextType | undefined>(
 export const PhotoProvider = ({ children }: { children: ReactNode }) => {
   const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
   const [photoAlbums, setPhotoAlbums] = useState<PhotoAlbum[]>([]);
+  const [isLoadingMorePhotos, setLoadingMorePhotos] = useState(false);
   const { setLoading } = useRequest();
 
   const handlePhotoAlbum = useCallback(
@@ -95,6 +98,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
         const batchSize = 10;
         const remainingPhotos = photoAlbum.slice(1);
         let loadedPhotosCount = 0;
+        setLoadingMorePhotos(true);
 
         while (loadedPhotosCount < remainingPhotos.length) {
           const batch = remainingPhotos.slice(
@@ -142,6 +146,8 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
           enqueueSnackbar(`Error al guardar el orden de las fotos: ${error}`, {
             variant: 'error',
           });
+      } finally {
+        setLoadingMorePhotos(false);
       }
     },
     []
@@ -176,8 +182,17 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
       deletePhoto,
       photoAlbums,
       setPhotoAlbums,
+      isLoadingMorePhotos,
+      setLoadingMorePhotos,
     }),
-    [photos, photoAlbums, handlePhotoAlbum, deletePhoto]
+    [
+      photos,
+      photoAlbums,
+      handlePhotoAlbum,
+      deletePhoto,
+      isLoadingMorePhotos,
+      setLoadingMorePhotos,
+    ]
   );
 
   return (

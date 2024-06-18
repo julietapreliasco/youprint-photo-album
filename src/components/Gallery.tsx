@@ -34,11 +34,13 @@ import OnBoarding from './Onboarding';
 import { usePhotoContext } from '../context/usePhotosHook';
 import { useAuth } from '../context/useAuthHook';
 import { FaExclamationCircle } from 'react-icons/fa';
+import { PaginationLoader } from '../components/ui/PaginationLoader';
 
 export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
-  const { photos, setPhotos, handlePhotoAlbum } = usePhotoContext();
+  const { photos, setPhotos, handlePhotoAlbum, isLoadingMorePhotos } =
+    usePhotoContext();
   const { setError, error, setLoading } = useRequest();
   const { openModal } = useModal();
   const { isAuthenticated } = useAuth();
@@ -280,6 +282,7 @@ export const Gallery = () => {
           <PhotoFrame overlay {...renderedPhotos.current[activeId]} />
         )}
       </DragOverlay>
+      {isLoadingMorePhotos && <PaginationLoader />}
     </DndContext>
   );
 };
