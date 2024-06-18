@@ -8,11 +8,13 @@ export type PhotoFrameProps = SortablePhotoProps & {
   listeners?: Partial<React.HTMLAttributes<HTMLDivElement>>;
   isCover?: boolean;
   number?: number;
-  onLoad?: (id: string) => void;
+  onLoad?: () => void;
   photoAlbumStatus?: boolean;
 };
 
-export type SortablePhotoProps = RenderPhotoProps<ExtendedPhoto>;
+export type SortablePhotoProps = RenderPhotoProps<ExtendedPhoto> & {
+  onLoad?: () => void;
+};
 
 export interface ExtendedPhoto extends Photo {
   id: string;

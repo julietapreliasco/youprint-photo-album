@@ -4,7 +4,6 @@ import React, {
   ReactNode,
   useCallback,
   useMemo,
-  useEffect,
 } from 'react';
 import { ExtendedPhoto, PhotoAlbum } from '../types';
 import {
@@ -40,7 +39,6 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
   const [photos, setPhotos] = useState<ExtendedPhoto[]>([]);
   const [photoAlbums, setPhotoAlbums] = useState<PhotoAlbum[]>([]);
   const { setLoading } = useRequest();
-  const [isFirstImageLoaded, setIsFirstImageLoaded] = useState(false);
 
   const handlePhotoAlbum = useCallback(
     async (
@@ -61,49 +59,89 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
             window.location.href = `https://wa.me/59892892300`;
           }
         }
+        const coverUrl = photoAlbum[0];
+        setLoading(true);
+        try {
+          const { width, height } = await getPhotoDimensions(coverUrl);
+          const coverPhoto: ExtendedPhoto = {
+            src: coverUrl,
+            width,
+            height,
+            id: coverUrl,
+            isCover: true,
+            number: 0,
+            client: client,
+          };
+          setPhotos([coverPhoto]);
+        } catch (error) {
+          console.error(
+            `Error al obtener dimensiones de la foto de portada ${coverUrl}:`,
+            error
+          );
+          const defaultCoverPhoto: ExtendedPhoto = {
+            src: coverUrl,
+            width: 1,
+            height: 1,
+            id: coverUrl,
+            isCover: true,
+            number: 0,
+            client: client,
+          };
+          setPhotos([defaultCoverPhoto]);
+        } finally {
+          setLoading(false);
+        }
 
-        const photosData: ExtendedPhoto[] = [];
-        await Promise.all(
-          photoAlbum.map(async (url, index) => {
-            try {
-              setLoading(true);
-              const { width, height } = await getPhotoDimensions(url);
-              photosData.push({
-                src: url,
-                width,
-                height,
-                id: url,
-                isCover: index === 0,
-                number: index,
-                client: client,
-              });
-            } catch (error) {
-              console.error(
-                `Error al obtener dimensiones de la foto ${url}:`,
-                error
-              );
-              photosData.push({
-                src: url,
-                width: 1,
-                height: 1,
-                id: url,
-                isCover: index === 0,
-                number: index,
-                client: client,
-              });
-            }
-          })
-        );
-        const sortedPhotosData = photosData.sort((a, b) => a.number - b.number);
-        setPhotos(sortedPhotosData);
+        const batchSize = 10;
+        const remainingPhotos = photoAlbum.slice(1);
+        let loadedPhotosCount = 0;
+
+        while (loadedPhotosCount < remainingPhotos.length) {
+          const batch = remainingPhotos.slice(
+            loadedPhotosCount,
+            loadedPhotosCount + batchSize
+          );
+
+          const batchPhotosData = await Promise.all(
+            batch.map(async (url, index) => {
+              try {
+                const { width, height } = await getPhotoDimensions(url);
+                return {
+                  src: url,
+                  width,
+                  height,
+                  id: url,
+                  isCover: false,
+                  number: loadedPhotosCount + index + 1,
+                  client: client,
+                };
+              } catch (error) {
+                console.error(
+                  `Error al obtener dimensiones de la foto ${url}:`,
+                  error
+                );
+                return {
+                  src: url,
+                  width: 1,
+                  height: 1,
+                  id: url,
+                  isCover: false,
+                  number: loadedPhotosCount + index + 1,
+                  client: client,
+                };
+              }
+            })
+          );
+
+          setPhotos((prevPhotos) => [...prevPhotos, ...batchPhotosData]);
+          loadedPhotosCount += batchSize;
+        }
       } catch (error) {
         console.error('Error al actualizar el álbum de fotos:', error);
         isUpdating &&
           enqueueSnackbar(`Error al guardar el orden de las fotos: ${error}`, {
             variant: 'error',
           });
-      } finally {
-        setLoading(false);
       }
     },
     []
@@ -129,20 +167,6 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
     },
     [updatePhotoNumbers]
   );
-
-  useEffect(() => {
-    if (photos.length > 0 && !isFirstImageLoaded) {
-      const img = new Image();
-      img.src = photos[0].src;
-      img.onload = () => setIsFirstImageLoaded(true);
-    }
-  }, [photos, isFirstImageLoaded]);
-
-  useEffect(() => {
-    if (isFirstImageLoaded) {
-      setLoading(false);
-    }
-  }, [isFirstImageLoaded, setLoading]);
 
   const value = useMemo(
     () => ({

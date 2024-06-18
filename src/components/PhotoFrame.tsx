@@ -4,7 +4,6 @@ import { PhotoFrameProps } from '../types';
 import { FaTrashAlt } from 'react-icons/fa';
 import { useModal } from '../context/useModalHook';
 import { usePhotoContext } from '../context/usePhotosHook';
-import { useRequest } from '../context/useRequestHook';
 
 const PhotoFrame = React.memo(
   React.forwardRef<HTMLDivElement, PhotoFrameProps>(
@@ -27,7 +26,6 @@ const PhotoFrame = React.memo(
       const [loaded, setLoaded] = useState(false);
       const { deletePhoto } = usePhotoContext();
       const { openModal } = useModal();
-      const { setLoading } = useRequest();
 
       const handleDelete = () => {
         openModal('¿Desea eliminar esta foto?', () =>
@@ -36,9 +34,8 @@ const PhotoFrame = React.memo(
       };
 
       const handleLoad = () => {
-        onLoad && onLoad;
+        onLoad && onLoad();
         setLoaded(true);
-        setLoading(false);
       };
 
       return (
@@ -58,46 +55,45 @@ const PhotoFrame = React.memo(
           {...attributes}
           {...listeners}
         >
-          {
-            <div>
-              <img
-                alt={alt}
-                {...restImageProps}
-                className={
-                  isCover && loaded
-                    ? 'react-photo-album--photo-cover'
-                    : 'react-photo-album--photo'
-                }
-                onLoad={handleLoad}
-                loading={isCover ? 'eager' : 'lazy'}
-              />
-              {isCover && loaded && (
-                <p className="absolute left-2 top-3 m-0 max-w-full truncate rounded bg-black bg-opacity-70 px-1 py-0.5 text-[10px] text-white sm:left-3 sm:px-2 sm:py-1 sm:text-sm lg:left-4 lg:top-4 lg:text-base xl:text-lg">
-                  Portada
+          <div>
+            <img
+              alt={alt}
+              {...restImageProps}
+              className={
+                isCover && loaded
+                  ? 'react-photo-album--photo-cover'
+                  : 'react-photo-album--photo'
+              }
+              onLoad={handleLoad}
+              loading={isCover ? 'eager' : 'lazy'}
+            />
+            {isCover && loaded && (
+              <p className="absolute left-2 top-3 m-0 max-w-full truncate rounded bg-black bg-opacity-70 px-1 py-0.5 text-[10px] text-white sm:left-3 sm:px-2 sm:py-1 sm:text-sm lg:left-4 lg:top-4 lg:text-base xl:text-lg">
+                Portada
+              </p>
+            )}
+            {loaded && !(active === undefined) && (
+              <>
+                <p className="absolute bottom-3 left-2 rounded text-xs font-bold text-white drop-shadow-2xl sm:left-3 sm:text-sm lg:bottom-4 lg:left-4 lg:text-base xl:text-lg">
+                  {number && !isCover ? number : null}
                 </p>
-              )}
-              {loaded && !(active === undefined) && (
-                <>
-                  <p className="absolute bottom-3 left-2 rounded text-xs font-bold text-white drop-shadow-2xl sm:left-3 sm:text-sm lg:bottom-4 lg:left-4 lg:text-base xl:text-lg">
-                    {number && !isCover ? number : null}
-                  </p>
-                  {photoAlbumStatus && (
-                    <>
-                      <button
-                        onClick={handleDelete}
-                        className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded  bg-black bg-opacity-40 px-1 py-1 text-xs text-white sm:right-3 sm:text-sm lg:right-4 lg:top-4 lg:text-base xl:text-lg"
-                      >
-                        <FaTrashAlt />
-                      </button>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          }
+                {photoAlbumStatus && (
+                  <>
+                    <button
+                      onClick={handleDelete}
+                      className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded  bg-black bg-opacity-40 px-1 py-1 text-xs text-white sm:right-3 sm:text-sm lg:right-4 lg:top-4 lg:text-base xl:text-lg"
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+          </div>
         </div>
       );
     }
   )
 );
+
 export default PhotoFrame;

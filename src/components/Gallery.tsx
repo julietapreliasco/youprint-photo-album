@@ -39,7 +39,7 @@ export const Gallery = () => {
   const { id } = useParams<{ id: string }>();
   const { width } = useWindowSize();
   const { photos, setPhotos, handlePhotoAlbum } = usePhotoContext();
-  const { setError, error } = useRequest();
+  const { setError, error, setLoading } = useRequest();
   const { openModal } = useModal();
   const { isAuthenticated } = useAuth();
   const [photoAlbumStatus, setPhotoAlbumStatus] = useState<boolean | undefined>(
@@ -77,6 +77,7 @@ export const Gallery = () => {
     const getPhotoAlbum = async () => {
       if (id) {
         try {
+          setLoading(true);
           const photoAlbum = await fetchPhotoAlbumById(id);
           setClient(photoAlbum.client);
           setPhotoAlbumStatus(photoAlbum.isPending);
@@ -92,6 +93,7 @@ export const Gallery = () => {
             errorMessage = error.message;
           }
           setError({ error: true, message: errorMessage });
+          setLoading(false);
         }
       }
     };
