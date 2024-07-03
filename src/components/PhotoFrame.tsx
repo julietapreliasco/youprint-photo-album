@@ -81,7 +81,7 @@ const PhotoFrame = React.memo(
                   <>
                     <button
                       onClick={handleDelete}
-                      className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded  bg-black bg-opacity-40 px-1 py-1 text-xs text-white sm:right-3 sm:text-sm lg:right-4 lg:top-4 lg:text-base xl:text-lg"
+                      className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded  bg-black bg-opacity-40 px-1 py-1 text-lg text-white sm:right-3 lg:right-4 lg:top-4"
                     >
                       <FaTrashAlt />
                     </button>

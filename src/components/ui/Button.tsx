@@ -1,7 +1,7 @@
 interface ButtonProps {
   message: string;
   onClick?: () => void;
-  variant?: 'PRIMARY' | 'SECONDARY' | 'DISABLED';
+  variant?: 'PRIMARY' | 'SECONDARY' | 'DISABLED' | 'GALLERY';
   type?: 'submit' | 'reset' | 'button' | undefined;
   disabled?: boolean;
 }
@@ -25,11 +25,14 @@ export const Button = ({
     case 'DISABLED':
       color = 'bg-disabled-grey';
       break;
+    case 'GALLERY':
+      color = 'bg-whatsapp-green hover:bg-whatsapp-secondary-green';
+      break;
     default:
       color = 'bg-yp-orange hover:bg-yp-secondary-orange';
   }
 
-  const className = `${color} text-white font-bold py-1 px-4 rounded text-[10px] sm:text-sm lg:py-2`;
+  const className = `${color} text-white font-bold py-1 px-4 rounded text-[15px] lg:py-2`;
 
   return (
     <>

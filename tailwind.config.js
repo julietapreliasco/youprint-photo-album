@@ -11,6 +11,8 @@ export default {
         'yp-red': '#f15156',
         'disabled-grey': '#999490',
         'disabled-grey-hover': '#7a7774',
+        'whatsapp-green': '#25D366',
+        'whatsapp-secondary-green': '#128C7E',
       },
     },
   },

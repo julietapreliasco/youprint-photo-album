@@ -162,13 +162,23 @@ export const Gallery = () => {
     photos: string[],
     isAuthenticated: boolean
   ) => {
-    openModal('¿Desea guardar el orden de las fotos?', async () => {
-      await handlePhotoAlbum(id, photos, true, client, isAuthenticated);
-    });
+    openModal(
+      '¿Desea guardar el orden de las fotos?',
+      async () => {
+        await handlePhotoAlbum(id, photos, true, client, isAuthenticated);
+      },
+      isAuthenticated ? '' : 'Al confirmar será redirigido a WhatsApp'
+    );
   };
 
   const handleAdd = () => {
-    window.location.href = `https://wa.me/59892892300`;
+    openModal(
+      '¿Desea regresar a Whatsapp para enviar más fotos?',
+      () => {
+        window.location.href = `https://wa.me/59892892300`;
+      },
+      'Los cambios no guardados se perderán'
+    );
   };
 
   const handleDownload = async () => {
@@ -236,7 +246,7 @@ export const Gallery = () => {
                           console.error('ID is undefined');
                         }
                       }}
-                      variant="PRIMARY"
+                      variant="GALLERY"
                       message={'Guardar'}
                     />
                     {isAuthenticated ? (
