@@ -9,31 +9,19 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const token = localStorage.getItem('token');
-    const tokenExpiration = localStorage.getItem('tokenExpiration');
-
-    if (token && tokenExpiration) {
-      const now = Date.now();
-      return now < parseInt(tokenExpiration);
-    }
-
-    return false;
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
-    const checkAuthStatus = async () => {
+    const checkAuthStatus = () => {
       const token = localStorage.getItem('token');
       const tokenExpiration = localStorage.getItem('tokenExpiration');
 
       if (token && tokenExpiration) {
         const now = Date.now();
-        if (now < parseInt(tokenExpiration)) {
+        if (now < parseInt(tokenExpiration, 10)) {
           setIsAuthenticated(true);
         } else {
-          localStorage.removeItem('token');
-          localStorage.removeItem('tokenExpiration');
-          setIsAuthenticated(false);
+          logout(); // Logout if token is expired
         }
       } else {
         setIsAuthenticated(false);
@@ -41,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     checkAuthStatus();
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   const login = (token: string) => {
     const tokenPayload = JSON.parse(atob(token.split('.')[1]));
@@ -58,12 +46,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('tokenExpiration');
   };
 
-  const value = useMemo(
+  const authContextValue = useMemo(
     () => ({ isAuthenticated, login, logout }),
     [isAuthenticated]
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={authContextValue}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthContext;

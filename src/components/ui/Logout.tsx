@@ -1,16 +1,16 @@
 import { LuLogOut } from 'react-icons/lu';
 import { useAuth } from '../../context/useAuthHook';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 export const Logout = () => {
   const { isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   if (!isAuthenticated) return null;
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    router.push('/login');
   };
 
   return (

@@ -1,11 +1,12 @@
-import '../App.css';
+import { useRouter } from 'next/router';
 import { useAuth } from '../context/useAuthHook';
 
 export const Header = () => {
   const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   const title =
-    isAuthenticated || location.pathname === '/login'
+    isAuthenticated || router.pathname === '/login'
       ? 'Gestion de Fotolibros'
       : 'Ordena tu Fotolibro';
 
@@ -16,7 +17,7 @@ export const Header = () => {
       </h1>
       <img
         className="w-20 md:w-32"
-        src={`${import.meta.env.VITE_PUBLIC_URL}/youprint-logo.png`}
+        src="/youprint-logo.png"
         alt="youprint-logo"
       />
     </header>

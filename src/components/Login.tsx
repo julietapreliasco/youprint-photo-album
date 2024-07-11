@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useAuth } from '../context/useAuthHook';
 import { loginRequest } from '../services/authService';
 import { Button } from './ui/Button';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 export const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ export const Login = () => {
       if (response) {
         if (response.token) {
           login(response.token);
-          navigate('/');
+          router.push('/');
         }
 
         if (response.error) {

@@ -4,14 +4,14 @@ import {
   updatePhotoAlbumStatus,
 } from '../services/photoAlbumService';
 import { Button } from './ui/Button';
-import { useNavigate } from 'react-router-dom';
 import { useModal } from '../context/useModalHook';
 import { useRequest } from '../context/useRequestHook';
 import { usePhotoContext } from '../context/usePhotosHook';
 import { enqueueSnackbar } from 'notistack';
+import { useRouter } from 'next/router';
 
 export const PhotoAlbumList = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { openModal } = useModal();
   const { setLoading, setError, error } = useRequest();
   const { photoAlbums, setPhotoAlbums } = usePhotoContext();
@@ -95,7 +95,7 @@ export const PhotoAlbumList = () => {
             <Button
               variant="PRIMARY"
               message="Galería"
-              onClick={() => navigate(`/gallery/${photoAlbum._id}`)}
+              onClick={() => router.push(`/gallery/${photoAlbum._id}`)}
             />
             {photoAlbum.isPending ? (
               <Button

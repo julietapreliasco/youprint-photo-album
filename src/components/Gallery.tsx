@@ -36,8 +36,11 @@ import { useAuth } from '../context/useAuthHook';
 import { FaExclamationCircle } from 'react-icons/fa';
 import { PaginationLoader } from '../components/ui/PaginationLoader';
 
-export const Gallery = () => {
-  const { id } = useParams<{ id: string }>();
+interface GalleryProps {
+  id: string;
+}
+
+export const Gallery: React.FC<GalleryProps> = ({ id }) => {
   const { width } = useWindowSize();
   const { photos, setPhotos, handlePhotoAlbum, isLoadingMorePhotos } =
     usePhotoContext();
