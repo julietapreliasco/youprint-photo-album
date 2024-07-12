@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, ReactNode, useMemo } from 'react';
 
 interface AuthContextProps {
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (token: string) => void;
   logout: () => void;
 }
@@ -10,6 +11,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const checkAuthStatus = () => {
@@ -21,15 +23,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (now < parseInt(tokenExpiration, 10)) {
           setIsAuthenticated(true);
         } else {
-          logout(); // Logout if token is expired
+          logout();
         }
       } else {
         setIsAuthenticated(false);
       }
+      setIsLoading(false);
     };
 
     checkAuthStatus();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   const login = (token: string) => {
     const tokenPayload = JSON.parse(atob(token.split('.')[1]));
@@ -38,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAuthenticated(true);
     localStorage.setItem('token', token);
     localStorage.setItem('tokenExpiration', expirationTime.toString());
+    setIsLoading(false);
   };
 
   const logout = () => {
@@ -47,8 +51,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const authContextValue = useMemo(
-    () => ({ isAuthenticated, login, logout }),
-    [isAuthenticated]
+    () => ({ isAuthenticated, isLoading, login, logout }),
+    [isAuthenticated, isLoading]
   );
 
   return (

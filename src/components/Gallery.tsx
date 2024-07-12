@@ -24,7 +24,6 @@ import PhotoFrame from '../components/PhotoFrame';
 import SortablePhotoFrame from '../components/SortablePhotoFrame';
 import { ExtendedPhoto, SortablePhotoProps } from '../types';
 import { Button } from './ui/Button';
-import { useParams } from 'react-router-dom';
 import { fetchPhotoAlbumById } from '../services/photoAlbumService';
 import { useModal } from '../context/useModalHook';
 import JSZip from 'jszip';

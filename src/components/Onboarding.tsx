@@ -21,7 +21,7 @@ const OnBoarding = () => {
       className="cursor-pointer rounded-md text-center"
       onClick={toggleExpanded}
     >
-      <div className="flex items-center justify-start gap-3 self-center pb-3 text-lg">
+      <div className="flex items-center justify-start gap-3 self-center pb-3 text-lg font-semibold">
         <span>¿Cómo usar?</span>
         {expanded ? (
           <FaChevronUp className="mr-2 text-yp-blue md:text-xl" />

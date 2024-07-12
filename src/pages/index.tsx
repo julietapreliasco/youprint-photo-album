@@ -3,19 +3,20 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/useAuthHook';
 import { PhotoAlbumList } from '../components/PhotoAlbumList';
+import { Loader } from '../components/ui/Loader';
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isLoading, router]);
 
-  if (!isAuthenticated) {
-    return null;
+  if (isLoading) {
+    return <Loader />;
   }
 
   return <PhotoAlbumList />;

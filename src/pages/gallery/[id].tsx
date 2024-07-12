@@ -1,4 +1,3 @@
-// pages/gallery/[id].tsx
 import { Gallery } from '../../components/Gallery';
 import { useRouter } from 'next/router';
 

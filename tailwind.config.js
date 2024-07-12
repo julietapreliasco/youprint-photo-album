@@ -1,4 +1,3 @@
-// tailwind.config.js
 export const content = ['./src/**/*.{html,js,tsx}'];
 export const theme = {
   extend: {
