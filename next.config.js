@@ -1,9 +1,11 @@
 module.exports = {
   async rewrites() {
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5173/api';
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:3000/api/:path*', // ajusta esta URL según tu configuración de servidor API
+        destination: `${apiBaseUrl}/api/:path*`,
       },
     ];
   },
