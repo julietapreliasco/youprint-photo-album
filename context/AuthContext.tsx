@@ -1,3 +1,5 @@
+'use client';
+import React from 'react';
 import { createContext, useState, useEffect, ReactNode, useMemo } from 'react';
 
 interface AuthContextProps {

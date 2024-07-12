@@ -1,12 +1,13 @@
-import { useRouter } from 'next/router';
+'use client';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '../context/useAuthHook';
 
 export const Header = () => {
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
+  const pathname = usePathname();
 
   const title =
-    isAuthenticated || router.pathname === '/login'
+    isAuthenticated || pathname === '/login'
       ? 'Gestion de Fotolibros'
       : 'Ordena tu Fotolibro';
 

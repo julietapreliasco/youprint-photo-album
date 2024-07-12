@@ -8,7 +8,7 @@ import { useModal } from '../context/useModalHook';
 import { useRequest } from '../context/useRequestHook';
 import { usePhotoContext } from '../context/usePhotosHook';
 import { enqueueSnackbar } from 'notistack';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 export const PhotoAlbumList = () => {
   const router = useRouter();

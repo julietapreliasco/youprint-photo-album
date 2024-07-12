@@ -1,3 +1,4 @@
+'use client';
 import { useAuth } from '../../context/useAuthHook';
 import { BackButton } from './BackButton';
 import { Logout } from './Logout';

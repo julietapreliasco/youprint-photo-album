@@ -1,3 +1,5 @@
+'use client';
+import React from 'react';
 import { ReactNode } from 'react';
 import { ModalProvider } from './modalContext';
 import { RequestProvider } from './requestContext';

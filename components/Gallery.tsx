@@ -1,3 +1,4 @@
+'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { PhotoAlbum } from 'react-photo-album';
 import { useWindowSize } from 'react-use';
@@ -20,8 +21,8 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 
-import PhotoFrame from '../components/PhotoFrame';
-import SortablePhotoFrame from '../components/SortablePhotoFrame';
+import PhotoFrame from './PhotoFrame';
+import SortablePhotoFrame from './SortablePhotoFrame';
 import { ExtendedPhoto, SortablePhotoProps } from '../types';
 import { Button } from './ui/Button';
 import { fetchPhotoAlbumById } from '../services/photoAlbumService';
@@ -33,7 +34,7 @@ import OnBoarding from './Onboarding';
 import { usePhotoContext } from '../context/usePhotosHook';
 import { useAuth } from '../context/useAuthHook';
 import { FaExclamationCircle } from 'react-icons/fa';
-import { PaginationLoader } from '../components/ui/PaginationLoader';
+import { PaginationLoader } from './ui/PaginationLoader';
 
 interface GalleryProps {
   id: string;

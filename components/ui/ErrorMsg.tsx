@@ -1,3 +1,5 @@
+'use client';
+
 import { useRequest } from '../../context/useRequestHook';
 
 export const ErrorMsg = () => {

@@ -1,6 +1,7 @@
+'use client';
 import { LuLogOut } from 'react-icons/lu';
 import { useAuth } from '../../context/useAuthHook';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 export const Logout = () => {
   const { isAuthenticated, logout } = useAuth();

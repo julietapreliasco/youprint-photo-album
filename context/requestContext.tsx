@@ -1,3 +1,4 @@
+'use client';
 import { createContext, useState, ReactNode, useMemo } from 'react';
 import { ErrorType } from '../types';
 

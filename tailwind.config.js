@@ -1,4 +1,7 @@
-export const content = ['./src/**/*.{html,js,tsx}'];
+export const content = [
+  './app/**/*.{js,ts,jsx,tsx}',
+  './components/**/*.{js,ts,jsx,tsx}',
+];
 export const theme = {
   extend: {
     colors: {

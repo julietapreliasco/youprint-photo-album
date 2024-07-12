@@ -1,8 +1,9 @@
+'use client';
 import { useState } from 'react';
 import { useAuth } from '../context/useAuthHook';
 import { loginRequest } from '../services/authService';
 import { Button } from './ui/Button';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 export const Login = () => {
   const [username, setUsername] = useState('');

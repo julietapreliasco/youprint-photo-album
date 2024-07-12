@@ -1,3 +1,5 @@
+'use client';
+
 import { useModal } from '../../context/useModalHook';
 
 export const ConfirmationModal = () => {

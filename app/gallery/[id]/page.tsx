@@ -1,21 +1,22 @@
-import { useEffect, useState } from 'react';
-import { Gallery } from '../../components/Gallery';
-import { useRouter } from 'next/router';
-import { Loader } from '../../components/ui/Loader';
+'use client';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { Loader } from '../../../components/ui/Loader';
+import { Gallery } from '../../../components/Gallery';
 // import {
 //   fetchPhotoAlbumById,
 //   fetchPhotoAlbums,
-// } from '../../services/photoAlbumService';
-// import { PhotoAlbum } from '../../types';
+// } from '../../../services/photoAlbumService';
 
 export default function GalleryPage() {
-  const router = useRouter();
-  const { id } = router.query;
+  const params = useParams();
+  const { id } = params;
   const [idLoaded, setIdLoaded] = useState<string | null>(null);
   console.log(id);
 
   useEffect(() => {
-    if (typeof id == 'string') {
+    if (typeof id === 'string') {
+      console.log(id);
       setIdLoaded(id);
     }
   }, [id]);
@@ -23,10 +24,10 @@ export default function GalleryPage() {
   return idLoaded ? <Gallery id={idLoaded} /> : <Loader />;
 }
 
-// export async function getStaticPaths() {
+// export async function generateStaticParams() {
 //   try {
 //     const photoAlbums = await fetchPhotoAlbums();
-//     const paths = photoAlbums.map((album: PhotoAlbum) => ({
+//     const paths = photoAlbums.map((album) => ({
 //       params: { id: album._id.toString() },
 //     }));
 //     return {
@@ -42,11 +43,7 @@ export default function GalleryPage() {
 //   }
 // }
 
-// interface Params {
-//   id: string;
-// }
-
-// export async function getStaticProps({ params }: { params: Params }) {
+// export async function getStaticProps({ params }) {
 //   try {
 //     const photoAlbum = await fetchPhotoAlbumById(params.id);
 //     return {

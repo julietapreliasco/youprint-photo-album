@@ -1,5 +1,7 @@
+'use client';
+import React from 'react';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/useAuthHook';
 import { PhotoAlbumList } from '../components/PhotoAlbumList';
 import { Loader } from '../components/ui/Loader';

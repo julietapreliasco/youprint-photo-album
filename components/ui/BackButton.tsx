@@ -1,12 +1,14 @@
+'use client';
 import { IoIosArrowBack } from 'react-icons/io';
 import { useAuth } from '../../context/useAuthHook';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter } from 'next/navigation';
 
 export const BackButton = () => {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
-  const showButton = isAuthenticated && router.pathname.startsWith('/gallery');
+  const showButton = isAuthenticated && pathname.startsWith('/gallery');
 
   if (!showButton) return null;
 

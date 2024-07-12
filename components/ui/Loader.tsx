@@ -1,3 +1,5 @@
+'use client';
+
 import { BeatLoader } from 'react-spinners';
 import { useRequest } from '../../context/useRequestHook';
 
