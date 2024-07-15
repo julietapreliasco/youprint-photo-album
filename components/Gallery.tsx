@@ -25,7 +25,6 @@ import PhotoFrame from './PhotoFrame';
 import SortablePhotoFrame from './SortablePhotoFrame';
 import { ExtendedPhoto, SortablePhotoProps } from '../types';
 import { Button } from './ui/Button';
-import { fetchPhotoAlbumById } from '../services/photoAlbumService';
 import { useModal } from '../context/useModalHook';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -83,15 +82,17 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
       if (id) {
         try {
           setLoading(true);
-          const photoAlbum = await fetchPhotoAlbumById(id);
-          setClient(photoAlbum.client);
-          setPhotoAlbumStatus(photoAlbum.isPending);
-          await handlePhotoAlbum(
-            id,
-            photoAlbum.photos,
-            false,
-            photoAlbum.client
-          );
+
+          const response = await fetch(`/api/photo-album/${id}`);
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error);
+          }
+          const data = await response.json();
+
+          setClient(data.client);
+          setPhotoAlbumStatus(data.isPending);
+          await handlePhotoAlbum(id, data.photos, false, data.client);
         } catch (error) {
           let errorMessage = 'An unknown error occurred';
           if (error instanceof Error) {

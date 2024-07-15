@@ -10,18 +10,32 @@ import { usePhotoContext } from '../context/usePhotosHook';
 import { enqueueSnackbar } from 'notistack';
 import { useRouter } from 'next/navigation';
 
+const getAuthToken = () => {
+  return localStorage.getItem('token');
+};
+
 export const PhotoAlbumList = () => {
   const router = useRouter();
   const { openModal } = useModal();
   const { setLoading, setError, error } = useRequest();
   const { photoAlbums, setPhotoAlbums } = usePhotoContext();
   const [emptyList, setEmptyList] = useState(false);
+  const token = getAuthToken();
 
   useEffect(() => {
     const getPhotoAlbum = async () => {
       try {
         setLoading(true);
-        const data = await fetchPhotoAlbums();
+        const response = await fetch('api/photo-album/getAll', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `${token}`,
+          },
+        });
+
+        const data = await response.json();
+
         setPhotoAlbums(data);
         setEmptyList(data?.length === 0);
       } catch (error) {
@@ -37,7 +51,7 @@ export const PhotoAlbumList = () => {
     if (photoAlbums.length === 0) {
       getPhotoAlbum();
     }
-  }, [setLoading, setError, setPhotoAlbums, photoAlbums.length]);
+  }, [setLoading, setError, setPhotoAlbums, photoAlbums.length, token]);
 
   const handleUpdateStatus = (id: string, isPending: boolean) => {
     openModal(

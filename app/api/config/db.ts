@@ -1,19 +1,17 @@
 import mongoose from 'mongoose';
 
 const connectDB = async () => {
-  const mongoUri = process.env.MONGODB_URI as string;
-
-  if (mongoose.connection.readyState >= 1) {
-    console.log('Already connected to MongoDB.');
+  if (mongoose.connections[0].readyState) {
+    console.log('Ya conectado a la base de datos');
     return;
   }
 
   try {
-    await mongoose.connect(mongoUri);
-    console.log('Connected to MongoDB.');
+    await mongoose.connect(process.env.MONGODB_URI!);
+    console.log('Conectado a la base de datos');
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-    process.exit(1);
+    console.error('Error al conectar a la base de datos:', error);
+    throw new Error('Error al conectar a la base de datos');
   }
 };
 
