@@ -108,7 +108,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     return () => {
       setPhotos([]);
     };
-  }, [id]);
+  }, [handlePhotoAlbum, id, setError, setLoading, setPhotos]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier>();
   const activeIndex = activeId
