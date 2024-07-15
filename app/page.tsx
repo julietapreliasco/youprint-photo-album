@@ -20,5 +20,5 @@ export default function Home() {
     return <Loader />;
   }
 
-  return <PhotoAlbumList />;
+  return isAuthenticated && <PhotoAlbumList />;
 }

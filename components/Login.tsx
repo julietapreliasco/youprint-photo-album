@@ -22,9 +22,7 @@ export const Login = () => {
         if (response.token) {
           login(response.token);
           router.push('/');
-        }
-
-        if (response.error) {
+        } else if (response.error) {
           setError(response.error);
         }
       }

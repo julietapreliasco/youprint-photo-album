@@ -1,6 +1,11 @@
 'use client';
-import React from 'react';
-import { createContext, useState, useEffect, ReactNode, useMemo } from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useMemo,
+} from 'react';
 
 interface AuthContextProps {
   isAuthenticated: boolean;
