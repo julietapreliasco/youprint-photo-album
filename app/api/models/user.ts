@@ -1,5 +1,5 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
-import bcrypt from "bcryptjs";
+import mongoose, { Document, Model, Schema } from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 interface User extends Document {
   username: string;
@@ -25,8 +25,8 @@ userSchema.methods.comparePassword = async function (
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-userSchema.pre<User>("save", async function (next) {
-  if (!this.isModified("password")) {
+userSchema.pre<User>('save', async function (next) {
+  if (!this.isModified('password')) {
     return next();
   }
   const salt = await bcrypt.genSalt(10);
@@ -34,6 +34,6 @@ userSchema.pre<User>("save", async function (next) {
   next();
 });
 
-const User: Model<User> = mongoose.model<User>("User", userSchema);
+const User: Model<User> = mongoose.model<User>('User', userSchema);
 
-export default User;
+export default mongoose.models.User || User;

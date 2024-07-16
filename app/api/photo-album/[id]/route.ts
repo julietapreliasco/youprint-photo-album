@@ -4,7 +4,7 @@ import PhotoAlbum from '../../models/photoAlbum';
 import connectDB from '../../config/db';
 
 export async function GET(
-  req: NextRequest,
+  _: NextRequest,
   { params }: { params: { id: string } }
 ) {
   await connectDB();
@@ -69,7 +69,8 @@ export async function PUT(
 
     return NextResponse.json(photoAlbum, { status: 200 });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
   }
 }

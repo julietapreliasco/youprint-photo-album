@@ -1,5 +1,5 @@
-import { model, Schema } from "mongoose";
-import { PhotoAlbum } from "../types";
+import mongoose, { model, Schema } from 'mongoose';
+import { PhotoAlbum } from '../types';
 
 const PhotoAlbumSchema = new Schema({
   photos: [
@@ -33,4 +33,5 @@ const PhotoAlbumSchema = new Schema({
   },
 });
 
-export default model<PhotoAlbum>("PhotoAlbum", PhotoAlbumSchema);
+export default mongoose.models.PhotoAlbum ||
+  model<PhotoAlbum>('PhotoAlbum', PhotoAlbumSchema);

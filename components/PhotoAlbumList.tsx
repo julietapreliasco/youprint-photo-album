@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 import {
   fetchPhotoAlbums,
@@ -26,16 +27,7 @@ export const PhotoAlbumList = () => {
     const getPhotoAlbum = async () => {
       try {
         setLoading(true);
-        const response = await fetch('api/photo-album/', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `${token}`,
-          },
-        });
-
-        const data = await response.json();
-
+        const data = await fetchPhotoAlbums(token);
         setPhotoAlbums(data);
         setEmptyList(data?.length === 0);
       } catch (error) {
@@ -53,29 +45,29 @@ export const PhotoAlbumList = () => {
     }
   }, [setLoading, setError, setPhotoAlbums, photoAlbums.length, token]);
 
-  // const handleUpdateStatus = (id: string, isPending: boolean) => {
-  //   openModal(
-  //     `${isPending ? '¿Desea dar por finalizado el fotolibro?' : '¿Desea volver a habilitar la edición del fotolibro?'}`,
-  //     async () => {
-  //       try {
-  //         await updatePhotoAlbumStatus(id);
-  //         const data = await fetchPhotoAlbums();
-  //         setPhotoAlbums(data);
-  //         enqueueSnackbar(
-  //           `${isPending ? 'Fotolibro finalizado con éxito' : 'Fotolibro habilitado con éxito'}`,
-  //           {
-  //             variant: 'success',
-  //           }
-  //         );
-  //       } catch (error) {
-  //         console.error('Error updating photo album:', error);
-  //         enqueueSnackbar(`Error al actualizar el Fotolibro: ${error}`, {
-  //           variant: 'error',
-  //         });
-  //       }
-  //     }
-  //   );
-  // };
+  const handleUpdateStatus = (id: string, isPending: boolean) => {
+    openModal(
+      `${isPending ? '¿Desea dar por finalizado el fotolibro?' : '¿Desea volver a habilitar la edición del fotolibro?'}`,
+      async () => {
+        try {
+          await updatePhotoAlbumStatus(id);
+          const data = await fetchPhotoAlbums(token);
+          setPhotoAlbums(data);
+          enqueueSnackbar(
+            `${isPending ? 'Fotolibro finalizado con éxito' : 'Fotolibro habilitado con éxito'}`,
+            {
+              variant: 'success',
+            }
+          );
+        } catch (error) {
+          console.error('Error updating photo album:', error);
+          enqueueSnackbar(`Error al actualizar el Fotolibro: ${error}`, {
+            variant: 'error',
+          });
+        }
+      }
+    );
+  };
 
   if (error.error) return null;
 

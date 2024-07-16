@@ -1,18 +1,41 @@
-import mongoose from 'mongoose';
+import mongoose, { Connection } from 'mongoose';
 
-const connectDB = async () => {
-  if (mongoose.connections[0].readyState) {
-    console.log('Ya conectado a la base de datos');
-    return;
+const MONGODB_URI = process.env.MONGODB_URI || '';
+
+if (!MONGODB_URI) {
+  throw new Error(
+    'Por favor, define la variable de entorno MONGODB_URI en el archivo .env.local'
+  );
+}
+
+interface Cached {
+  conn: Connection | null;
+  promise: Promise<Connection> | null;
+}
+declare global {
+  // eslint-disable-next-line no-var
+  var mongoose: Cached;
+}
+
+global.mongoose = global.mongoose || { conn: null, promise: null };
+const cached = global.mongoose;
+
+async function connectDB(): Promise<Connection> {
+  if (cached.conn) {
+    return cached.conn;
   }
 
-  try {
-    await mongoose.connect(process.env.MONGODB_URI!);
-    console.log('Conectado a la base de datos');
-  } catch (error) {
-    console.error('Error al conectar a la base de datos:', error);
-    throw new Error('Error al conectar a la base de datos');
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      return mongoose.connection;
+    });
   }
-};
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
 
 export default connectDB;
