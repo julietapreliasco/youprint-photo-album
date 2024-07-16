@@ -138,7 +138,15 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
             })
           );
 
-          setPhotos((prevPhotos) => [...prevPhotos, ...batchPhotosData]);
+          setPhotos((prevPhotos) => {
+            const existingPhotoIds = new Set(
+              prevPhotos.map((photo) => photo.id)
+            );
+            const newPhotos = batchPhotosData.filter(
+              (photo) => !existingPhotoIds.has(photo.id)
+            );
+            return [...prevPhotos, ...newPhotos];
+          });
           loadedPhotosCount += batchSize;
         }
       } catch (error) {

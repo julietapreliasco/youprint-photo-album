@@ -1,25 +1,8 @@
-// import { PhotoAlbum } from '../types';
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const getAuthToken = () => {
   return localStorage.getItem('token');
 };
-
-// export const fetchPhotoAlbumById = async (id: string) => {
-//   try {
-//     const response = await fetch(`${API_URL}/photo-album/${id}`);
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       throw new Error(errorData.error);
-//     }
-//     const data = await response.json();
-//     return data;
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// };
 
 export const fetchPhotoAlbums = async (token: string | null) => {
   if (token === null) {
