@@ -1,3 +1,5 @@
+import { PhotoAlbumPhotos } from '../types';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const getAuthToken = () => {
@@ -66,7 +68,10 @@ export const deletePhotoAlbum = async (id: string) => {
   }
 };
 
-export const updatePhotoAlbum = async (id: string, photos: string[]) => {
+export const updatePhotoAlbum = async (
+  id: string,
+  photos: PhotoAlbumPhotos[]
+) => {
   const response = await fetch(`/api/photo-album/${id}`, {
     method: 'PUT',
     headers: {

@@ -1,5 +1,4 @@
-'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { PhotoAlbum } from 'react-photo-album';
 import { useWindowSize } from 'react-use';
 import {
@@ -23,7 +22,7 @@ import {
 
 import PhotoFrame from './PhotoFrame';
 import SortablePhotoFrame from './SortablePhotoFrame';
-import { ExtendedPhoto, SortablePhotoProps } from '../types';
+import { ExtendedPhoto, PhotoAlbumPhotos, SortablePhotoProps } from '../types';
 import { Button } from './ui/Button';
 import { useModal } from '../context/useModalHook';
 import JSZip from 'jszip';
@@ -163,13 +162,21 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
 
   const handleSave = async (
     id: string,
-    photos: string[],
+    photoIds: string[],
     isAuthenticated: boolean
   ) => {
     openModal(
       '¿Desea guardar el orden de las fotos?',
       async () => {
-        await handlePhotoAlbum(id, photos, true, client, isAuthenticated);
+        const photoAlbum: PhotoAlbumPhotos[] = photoIds.map((id) => {
+          const photo = photos.find((photo) => photo.id === id);
+          return {
+            originalURL: photo?.originalURL || '',
+            optimizedURL: photo?.src || '',
+          };
+        });
+
+        await handlePhotoAlbum(id, photoAlbum, true, client, isAuthenticated);
       },
       isAuthenticated ? '' : 'Al confirmar será redirigido a WhatsApp'
     );
@@ -179,7 +186,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     openModal(
       '¿Desea regresar a Whatsapp para enviar más fotos?',
       () => {
-        window.location.href = `https://wa.me/59892892300`;
+        window.location.href = ' https://wa.me/59892892300';
       },
       'Los cambios no guardados se perderán'
     );
@@ -191,7 +198,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     try {
       const fetchPromises = photos.map(async (photo, index) => {
         try {
-          const response = await fetch(photo.src);
+          const response = await fetch(photo.originalURL);
           const blob = await response.blob();
           zip.file(`${index == 0 ? 'portada' : index}.jpeg`, blob);
         } catch (error) {

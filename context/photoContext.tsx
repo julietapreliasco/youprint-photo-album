@@ -1,4 +1,3 @@
-'use client';
 import React, {
   createContext,
   useState,
@@ -6,7 +5,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { ExtendedPhoto, PhotoAlbum } from '../types';
+import { ExtendedPhoto, PhotoAlbum, PhotoAlbumPhotos } from '../types';
 import {
   updatePhotoAlbum,
   getPhotoDimensions,
@@ -23,7 +22,7 @@ interface PhotoContextType {
   setPhotos: React.Dispatch<React.SetStateAction<ExtendedPhoto[]>>;
   handlePhotoAlbum: (
     id: string,
-    photoAlbum: string[],
+    photoAlbum: PhotoAlbumPhotos[],
     isUpdating: boolean,
     client: {
       name?: string;
@@ -47,7 +46,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
   const handlePhotoAlbum = useCallback(
     async (
       id: string,
-      photoAlbum: string[],
+      photoAlbum: PhotoAlbumPhotos[],
       isUpdating: boolean,
       client: { name?: string; phone: string },
       isAuthenticated?: boolean
@@ -63,92 +62,54 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
             window.location.href = `https://wa.me/59892892300`;
           }
         }
-        const coverUrl = photoAlbum[0];
+
         setLoading(true);
-        try {
-          const { width, height } = await getPhotoDimensions(coverUrl);
-          const coverPhoto: ExtendedPhoto = {
-            src: coverUrl,
-            width,
-            height,
-            id: coverUrl,
-            isCover: true,
-            number: 0,
-            client: client,
-          };
-          setPhotos([coverPhoto]);
-        } catch (error) {
-          console.error(
-            `Error al obtener dimensiones de la foto de portada ${coverUrl}:`,
-            error
-          );
-          const defaultCoverPhoto: ExtendedPhoto = {
-            src: coverUrl,
-            width: 1,
-            height: 1,
-            id: coverUrl,
-            isCover: true,
-            number: 0,
-            client: client,
-          };
-          setPhotos([defaultCoverPhoto]);
-        } finally {
-          setLoading(false);
-        }
+        const batchPhotosData = await Promise.all(
+          photoAlbum.map(async (photo, index) => {
+            if (!photo.optimizedURL) {
+              console.error(
+                `Foto con URL original ${photo.originalURL} no tiene optimizedURL`
+              );
+              return null;
+            }
+            try {
+              const { width, height } = await getPhotoDimensions(
+                photo.optimizedURL
+              );
+              return {
+                src: photo.optimizedURL,
+                originalURL: photo.originalURL,
+                width,
+                height,
+                id: photo.optimizedURL,
+                isCover: index === 0,
+                number: index,
+                client: client,
+              };
+            } catch (error) {
+              console.error(
+                `Error al obtener dimensiones de la foto ${photo.optimizedURL}:`,
+                error
+              );
+              return {
+                src: photo.optimizedURL,
+                originalURL: photo.originalURL,
+                width: 1,
+                height: 1,
+                id: photo.optimizedURL,
+                isCover: index === 0,
+                number: index,
+                client: client,
+              };
+            }
+          })
+        );
 
-        const batchSize = 10;
-        const remainingPhotos = photoAlbum.slice(1);
-        let loadedPhotosCount = 0;
-        setLoadingMorePhotos(true);
+        const validBatchPhotosData = batchPhotosData.filter(
+          (photo): photo is ExtendedPhoto => photo !== null
+        );
 
-        while (loadedPhotosCount < remainingPhotos.length) {
-          const batch = remainingPhotos.slice(
-            loadedPhotosCount,
-            loadedPhotosCount + batchSize
-          );
-
-          const batchPhotosData = await Promise.all(
-            batch.map(async (url, index) => {
-              try {
-                const { width, height } = await getPhotoDimensions(url);
-                return {
-                  src: url,
-                  width,
-                  height,
-                  id: url,
-                  isCover: false,
-                  number: loadedPhotosCount + index + 1,
-                  client: client,
-                };
-              } catch (error) {
-                console.error(
-                  `Error al obtener dimensiones de la foto ${url}:`,
-                  error
-                );
-                return {
-                  src: url,
-                  width: 1,
-                  height: 1,
-                  id: url,
-                  isCover: false,
-                  number: loadedPhotosCount + index + 1,
-                  client: client,
-                };
-              }
-            })
-          );
-
-          setPhotos((prevPhotos) => {
-            const existingPhotoIds = new Set(
-              prevPhotos.map((photo) => photo.id)
-            );
-            const newPhotos = batchPhotosData.filter(
-              (photo) => !existingPhotoIds.has(photo.id)
-            );
-            return [...prevPhotos, ...newPhotos];
-          });
-          loadedPhotosCount += batchSize;
-        }
+        setPhotos(validBatchPhotosData);
       } catch (error) {
         console.error('Error al actualizar el álbum de fotos:', error);
         isUpdating &&
@@ -156,32 +117,18 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
             variant: 'error',
           });
       } finally {
+        setLoading(false);
         setLoadingMorePhotos(false);
       }
     },
     []
   );
 
-  const updatePhotoNumbers = useCallback(
-    (photos: ExtendedPhoto[]): ExtendedPhoto[] => {
-      return photos.map((photo, index) => ({
-        ...photo,
-        isCover: index === 0,
-        number: index,
-      }));
-    },
-    []
-  );
-
-  const deletePhoto = useCallback(
-    (photoId: string) => {
-      setPhotos((prevPhotos) => {
-        const newPhotos = prevPhotos.filter((photo) => photo.id !== photoId);
-        return updatePhotoNumbers(newPhotos);
-      });
-    },
-    [updatePhotoNumbers]
-  );
+  const deletePhoto = useCallback((photoId: string) => {
+    setPhotos((prevPhotos) =>
+      prevPhotos.filter((photo) => photo.id !== photoId)
+    );
+  }, []);
 
   const value = useMemo(
     () => ({

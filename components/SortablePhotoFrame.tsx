@@ -14,6 +14,7 @@ function SortablePhotoFrame(
 
   return (
     <PhotoFrame
+      key={photo.id}
       ref={setNodeRef}
       active={isDragging}
       isCover={photo.isCover}

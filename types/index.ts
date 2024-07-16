@@ -17,15 +17,22 @@ export type SortablePhotoProps = RenderPhotoProps<ExtendedPhoto> & {
 };
 
 export interface ExtendedPhoto extends Photo {
+  originalURL: string;
+  optimizedURL?: string;
   id: string;
   isCover: boolean;
   number: number;
   client: { name?: string; phone: string };
 }
 
+export interface PhotoAlbumPhotos {
+  originalURL: string;
+  optimizedURL: string;
+}
+
 export interface PhotoAlbum {
   _id: string;
-  photos: string[];
+  photos: PhotoAlbumPhotos[] | string[];
   client: {
     name?: string;
     phone: string;
