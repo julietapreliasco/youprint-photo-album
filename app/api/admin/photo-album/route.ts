@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     });
 
     await newPhotoAlbum.save();
-    const url = `${process.env.APP}gallery/${newPhotoAlbum._id}`;
+    const url = `${process.env.APP}/gallery/${newPhotoAlbum._id}`;
 
     return NextResponse.json({ url }, { status: 201 });
   } catch (error) {

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import PhotoAlbum from '../models/photoAlbum';
 import connectDB from '../config/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   await connectDB();
 
