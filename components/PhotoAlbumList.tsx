@@ -40,10 +40,10 @@ export const PhotoAlbumList = () => {
         setLoading(false);
       }
     };
-    if (photoAlbums.length === 0) {
+    if (photoAlbums?.length === 0) {
       getPhotoAlbum();
     }
-  }, [setLoading, setError, setPhotoAlbums, photoAlbums.length, token]);
+  }, [setLoading, setError, setPhotoAlbums, photoAlbums?.length, token]);
 
   const handleUpdateStatus = (id: string, isPending: boolean) => {
     openModal(

@@ -1,3 +1,4 @@
+import cloudinary from '../../../../cloudinaryConfig';
 import connectDB from '../../config/db';
 import PhotoAlbumModel from '../../models/photoAlbum';
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,8 +16,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const optimizedPhotoUrls: string[] = [];
+
+    for (const originalURL of photos) {
+      const result = await cloudinary.uploader.upload(originalURL, {
+        quality: 'auto',
+        fetch_format: 'auto',
+        format: 'webp',
+        folder: 'photo-albums',
+      });
+      optimizedPhotoUrls.push(result.secure_url);
+    }
+
     const newPhotoAlbum = new PhotoAlbumModel({
-      photos,
+      photos: photos.map((originalURL: string, index: number) => ({
+        originalURL,
+        optimizedURL: optimizedPhotoUrls[index],
+      })),
       client,
       createdAt: new Date(),
       isPending: true,

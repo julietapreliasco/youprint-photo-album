@@ -1,3 +1,5 @@
+import cloudinary from '../../../../../cloudinaryConfig';
+import { PhotoAlbumPhotos } from '../../../../../types';
 import connectDB from '../../../config/db';
 import PhotoAlbumModel from '../../../models/photoAlbum';
 import { isValidObjectId } from 'mongoose';
@@ -27,9 +29,11 @@ export async function PUT(
       );
     }
 
-    const existingPhotos = photoAlbum.photos;
+    const existingPhotoURLs = new Set(
+      photoAlbum.photos.map((photo: PhotoAlbumPhotos) => photo.originalURL)
+    );
     const newPhotos = photos.filter(
-      (photo: string) => !existingPhotos.includes(photo)
+      (photo: string) => !existingPhotoURLs.has(photo)
     );
 
     if (newPhotos.length === 0) {
@@ -39,9 +43,23 @@ export async function PUT(
       );
     }
 
+    const optimizedPhotoUrls: PhotoAlbumPhotos[] = [];
+
+    for (const originalURL of newPhotos) {
+      const result = await cloudinary.uploader.upload(originalURL, {
+        quality: 'auto',
+        fetch_format: 'auto',
+        format: 'webp',
+        folder: 'photo-albums',
+      });
+      optimizedPhotoUrls.push({ originalURL, optimizedURL: result.secure_url });
+    }
+
+    const updatedPhotos = [...photoAlbum.photos, ...optimizedPhotoUrls];
+
     photoAlbum.photos = Array.from(
-      new Set([...photoAlbum.photos, ...newPhotos])
-    );
+      new Set(updatedPhotos.map((photo) => JSON.stringify(photo)))
+    ).map((photo) => JSON.parse(photo));
     photoAlbum.updatedAt = new Date();
 
     await photoAlbum.save();

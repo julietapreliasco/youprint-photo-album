@@ -4,8 +4,14 @@ import { PhotoAlbum } from '../types';
 const PhotoAlbumSchema = new Schema({
   photos: [
     {
-      type: String,
-      required: true,
+      originalURL: {
+        type: String,
+        required: true,
+      },
+      optimizedURL: {
+        type: String,
+        required: false,
+      },
     },
   ],
   client: {
