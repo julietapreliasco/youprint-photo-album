@@ -15,7 +15,7 @@ export const fetchPhotoAlbums = async (token: string | null) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 

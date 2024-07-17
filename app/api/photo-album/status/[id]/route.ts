@@ -37,3 +37,35 @@ export async function PUT(
     }
   }
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectDB();
+    const { id } = params;
+
+    if (!isValidObjectId(id)) {
+      return NextResponse.json({ error: 'Id inválido' }, { status: 400 });
+    }
+
+    const photoAlbum = await PhotoAlbumModel.findById(id);
+    if (!photoAlbum) {
+      return NextResponse.json(
+        { error: 'Álbum de fotos no encontrado' },
+        { status: 404 }
+      );
+    }
+
+    await PhotoAlbumModel.deleteOne({ _id: id });
+    return NextResponse.json(
+      { message: 'Álbum de fotos eliminado exitosamente' },
+      { status: 200 }
+    );
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+  }
+}
