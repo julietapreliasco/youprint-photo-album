@@ -4,39 +4,28 @@ const getAuthToken = () => {
   return localStorage.getItem('token');
 };
 
-export const fetchPhotoAlbumById = async (id: string) => {
-  try {
-    const response = await fetch(`${API_URL}/photo-album/${id}`);
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw error;
+export const fetchPhotoAlbums = async (token: string | null) => {
+  if (token === null) {
+    console.error('Token is null');
+    return;
   }
-};
 
-export const fetchPhotoAlbums = async () => {
   try {
-    const token = getAuthToken();
-    const response = await fetch(`${API_URL}/photo-album`, {
+    const response = await fetch('/api/photo-album/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error);
+      throw new Error('Failed to fetch photo albums');
     }
-    const data = await response.json();
-    return data;
+
+    return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching photo albums:', error);
     throw error;
   }
 };
@@ -78,40 +67,38 @@ export const deletePhotoAlbum = async (id: string) => {
 };
 
 export const updatePhotoAlbum = async (id: string, photos: string[]) => {
-  try {
-    const response = await fetch(`${API_URL}/photo-album/update/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ photos }),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    throw error;
+  const response = await fetch(`/api/photo-album/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ photos }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.statusText}`);
   }
+
+  return response.json();
 };
 
 export const updatePhotoAlbumStatus = async (id: string) => {
   try {
     const token = getAuthToken();
 
-    const response = await fetch(`${API_URL}/photo-album/status/${id}`, {
+    const response = await fetch(`/api/photo-album/status/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `${token}`,
       },
     });
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error);
     }
+
     return await response.json();
   } catch (error) {
     console.error(error);

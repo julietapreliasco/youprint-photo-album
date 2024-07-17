@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 import {
   fetchPhotoAlbums,
@@ -10,18 +11,23 @@ import { usePhotoContext } from '../context/usePhotosHook';
 import { enqueueSnackbar } from 'notistack';
 import { useRouter } from 'next/navigation';
 
+const getAuthToken = () => {
+  return localStorage.getItem('token');
+};
+
 export const PhotoAlbumList = () => {
   const router = useRouter();
   const { openModal } = useModal();
   const { setLoading, setError, error } = useRequest();
   const { photoAlbums, setPhotoAlbums } = usePhotoContext();
   const [emptyList, setEmptyList] = useState(false);
+  const token = getAuthToken();
 
   useEffect(() => {
     const getPhotoAlbum = async () => {
       try {
         setLoading(true);
-        const data = await fetchPhotoAlbums();
+        const data = await fetchPhotoAlbums(token);
         setPhotoAlbums(data);
         setEmptyList(data?.length === 0);
       } catch (error) {
@@ -37,7 +43,7 @@ export const PhotoAlbumList = () => {
     if (photoAlbums.length === 0) {
       getPhotoAlbum();
     }
-  }, [setLoading, setError, setPhotoAlbums, photoAlbums.length]);
+  }, [setLoading, setError, setPhotoAlbums, photoAlbums.length, token]);
 
   const handleUpdateStatus = (id: string, isPending: boolean) => {
     openModal(
@@ -45,7 +51,7 @@ export const PhotoAlbumList = () => {
       async () => {
         try {
           await updatePhotoAlbumStatus(id);
-          const data = await fetchPhotoAlbums();
+          const data = await fetchPhotoAlbums(token);
           setPhotoAlbums(data);
           enqueueSnackbar(
             `${isPending ? 'Fotolibro finalizado con éxito' : 'Fotolibro habilitado con éxito'}`,

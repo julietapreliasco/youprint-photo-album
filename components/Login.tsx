@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useAuth } from '../context/useAuthHook';
-import { loginRequest } from '../services/authService';
 import { Button } from './ui/Button';
 import { useRouter } from 'next/navigation';
 
@@ -16,15 +15,23 @@ export const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await loginRequest(username, password);
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-      if (response) {
-        if (response.token) {
-          login(response.token);
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.token) {
+          login(data.token);
           router.push('/');
-        } else if (response.error) {
-          setError(response.error);
         }
+      } else {
+        setError(data.error || 'Ocurrió un error al intentar iniciar sesión.');
       }
     } catch (error) {
       setError('Ocurrió un error al intentar iniciar sesión.');
