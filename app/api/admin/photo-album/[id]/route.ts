@@ -43,23 +43,29 @@ export async function PUT(
       );
     }
 
-    const optimizedPhotoUrls: PhotoAlbumPhotos[] = [];
-
-    for (const originalURL of newPhotos) {
-      const result = await cloudinary.uploader.upload(originalURL, {
+    const uploadPromises = newPhotos.map((originalURL: string) =>
+      cloudinary.uploader.upload(originalURL, {
         quality: 'auto',
         fetch_format: 'auto',
         format: 'webp',
         folder: 'photo-albums',
-      });
-      optimizedPhotoUrls.push({ originalURL, optimizedURL: result.secure_url });
-    }
+      })
+    );
+
+    const uploadResults = await Promise.all(uploadPromises);
+
+    const optimizedPhotoUrls = uploadResults.map((result, index) => ({
+      originalURL: newPhotos[index],
+      optimizedURL: result.secure_url,
+    }));
 
     const updatedPhotos = [...photoAlbum.photos, ...optimizedPhotoUrls];
 
-    photoAlbum.photos = Array.from(
+    const uniquePhotos = Array.from(
       new Set(updatedPhotos.map((photo) => JSON.stringify(photo)))
     ).map((photo) => JSON.parse(photo));
+
+    photoAlbum.photos = uniquePhotos;
     photoAlbum.updatedAt = new Date();
 
     await photoAlbum.save();

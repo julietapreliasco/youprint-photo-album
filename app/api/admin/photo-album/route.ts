@@ -16,17 +16,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const optimizedPhotoUrls: string[] = [];
-
-    for (const originalURL of photos) {
-      const result = await cloudinary.uploader.upload(originalURL, {
+    const uploadPromises = photos.map((originalURL: string) =>
+      cloudinary.uploader.upload(originalURL, {
         quality: 'auto',
         fetch_format: 'auto',
         format: 'webp',
         folder: 'photo-albums',
-      });
-      optimizedPhotoUrls.push(result.secure_url);
-    }
+      })
+    );
+
+    const uploadResults = await Promise.all(uploadPromises);
+
+    const optimizedPhotoUrls = uploadResults.map((result) => result.secure_url);
 
     const newPhotoAlbum = new PhotoAlbumModel({
       photos: photos.map((originalURL: string, index: number) => ({
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
     });
 
     await newPhotoAlbum.save();
-    const url = `${process.env.APP}/gallery/${newPhotoAlbum._id}`;
+    const url = `${process.env.APP}gallery/${newPhotoAlbum._id}`;
 
     return NextResponse.json({ url }, { status: 201 });
   } catch (error) {
