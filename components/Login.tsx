@@ -46,7 +46,7 @@ export const Login = () => {
       <div className="flex w-36 flex-col gap-2 sm:w-auto">
         <label>Usuario:</label>
         <input
-          className="rounded-lg border border-yp-secondary-blue px-2 py-1"
+          className="rounded-lg border border-yp-secondary-blue px-2 py-1 text-[16px]"
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -55,7 +55,7 @@ export const Login = () => {
       <div className="flex w-36 flex-col gap-2 sm:w-auto">
         <label>Contraseña:</label>
         <input
-          className="rounded-lg border border-yp-secondary-blue px-2 py-1"
+          className="rounded-lg border border-yp-secondary-blue px-2 py-1 text-[16px]"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

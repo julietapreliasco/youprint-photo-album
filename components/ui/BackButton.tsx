@@ -17,7 +17,7 @@ export const BackButton = () => {
   };
 
   return (
-    <button className="text-base" onClick={handleBack}>
+    <button className="text-md md:text-lg" onClick={handleBack}>
       <IoIosArrowBack size={20} color="#f9ac2b" />
     </button>
   );

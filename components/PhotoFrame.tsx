@@ -68,7 +68,7 @@ const PhotoFrame = React.memo(
               loading={isCover ? 'eager' : 'lazy'}
             />
             {isCover && loaded && (
-              <p className="absolute left-2 top-3 m-0 max-w-full truncate rounded bg-black bg-opacity-70 px-1 py-0.5 text-[10px] text-white sm:left-3 sm:px-2 sm:py-1 sm:text-sm lg:left-4 lg:top-4 lg:text-base xl:text-lg">
+              <p className="absolute bottom-3 left-2 max-w-full truncate rounded bg-black bg-opacity-70 px-1 py-0.5 text-[20px] text-white sm:left-3 sm:px-2 sm:py-1 lg:bottom-4 lg:left-4">
                 Portada
               </p>
             )}
@@ -81,7 +81,7 @@ const PhotoFrame = React.memo(
                   <>
                     <button
                       onClick={handleDelete}
-                      className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded  bg-black bg-opacity-40 px-1 py-1 text-lg text-white sm:right-3 lg:right-4 lg:top-4"
+                      className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded bg-black bg-opacity-30 px-4 py-3 text-xl text-white sm:right-3 lg:right-4 lg:top-4"
                     >
                       <FaTrashAlt />
                     </button>

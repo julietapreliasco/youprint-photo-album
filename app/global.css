@@ -14,17 +14,13 @@ body {
   box-sizing: border-box;
   position: relative;
   align-self: center;
-  cursor: grab;
+  /* cursor: grab; */
   object-fit: cover;
   border-radius: 3%;
   box-shadow:
     rgb(0 0 0 / 20%) 0 3px 3px -2px,
     rgb(0 0 0 / 14%) 0 3px 4px 0,
     rgb(0 0 0 / 12%) 0 1px 8px 0;
-}
-
-.photo-frame:hover {
-  transform: scale(1.02);
 }
 
 .react-photo-album--photo {
@@ -38,9 +34,9 @@ body {
   border: 3px solid #86d6df;
 }
 
-.photo-frame.overlay {
+/* .photo-frame.overlay {
   cursor: grabbing;
-}
+} */
 
 .photo-frame.active,
 .photo-frame.active img {
