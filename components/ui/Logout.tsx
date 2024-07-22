@@ -15,7 +15,7 @@ export const Logout = () => {
   };
 
   return (
-    <div className="text-md flex flex-grow justify-end md:text-lg">
+    <div className="flex flex-grow justify-end text-base md:text-lg">
       <button className="flex items-center gap-2" onClick={handleLogout}>
         <LuLogOut color="#10abbb" />
         <label className="cursor-pointer">Salir</label>

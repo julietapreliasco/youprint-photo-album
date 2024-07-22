@@ -27,7 +27,12 @@ const PhotoFrame = React.memo(
       const { deletePhoto } = usePhotoContext();
       const { openModal } = useModal();
 
-      const handleDelete = () => {
+      const handleDelete = (
+        event:
+          | React.MouseEvent<HTMLButtonElement>
+          | React.TouchEvent<HTMLButtonElement>
+      ) => {
+        event.stopPropagation();
         openModal('¿Desea eliminar esta foto?', () =>
           deletePhoto(imageProps.src)
         );
@@ -81,7 +86,8 @@ const PhotoFrame = React.memo(
                   <>
                     <button
                       onClick={handleDelete}
-                      className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded bg-black bg-opacity-30 px-4 py-3 text-xl text-white sm:right-3 lg:right-4 lg:top-4"
+                      onTouchStart={(e) => e.stopPropagation()}
+                      className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded bg-black bg-opacity-30 px-2 py-2 text-base text-white sm:right-3 lg:right-4 lg:top-4"
                     >
                       <FaTrashAlt />
                     </button>

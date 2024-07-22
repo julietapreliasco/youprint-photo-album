@@ -14,7 +14,7 @@ body {
   box-sizing: border-box;
   position: relative;
   align-self: center;
-  /* cursor: grab; */
+  cursor: grab;
   object-fit: cover;
   border-radius: 3%;
   box-shadow:
@@ -34,9 +34,9 @@ body {
   border: 3px solid #86d6df;
 }
 
-/* .photo-frame.overlay {
+.photo-frame.overlay {
   cursor: grabbing;
-} */
+}
 
 .photo-frame.active,
 .photo-frame.active img {
