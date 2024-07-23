@@ -3,11 +3,8 @@ import {
   FaRegHandPaper,
   FaChevronDown,
   FaChevronUp,
-  FaTrashAlt,
   FaRegSave,
 } from 'react-icons/fa';
-import { MdOutlineRefresh } from 'react-icons/md';
-import { IoIosAddCircleOutline } from 'react-icons/io';
 
 const OnBoarding = () => {
   const [expanded, setExpanded] = useState(false);
@@ -38,27 +35,8 @@ const OnBoarding = () => {
           <div className="text-left text-sm md:text-base">
             <FaRegSave className="mr-2 inline text-yp-blue md:text-xl" />
             <span>
-              Hacer click en "Guardar" al terminar de ordenar las fotos
-            </span>
-          </div>
-          <div className="text-left text-sm md:text-base">
-            <FaTrashAlt className="mr-2 inline text-yp-blue md:text-xl" />
-            <span>
-              Una vez guardados los cambios, no se podrán recuperar las fotos
-              borradas y se volverá a whatsapp
-            </span>
-          </div>
-          <div className="text-left text-sm md:text-base">
-            <MdOutlineRefresh className="mr-2 inline text-yp-blue md:text-xl" />
-            <span>
-              Para volver a empezar, recargar la página antes de guardar
-            </span>
-          </div>
-          <div className="text-left text-sm md:text-base">
-            <IoIosAddCircleOutline className="mr-2 inline text-yp-blue md:text-xl" />
-            <span>
-              Al hacer click en "Agregar fotos" se volverá a la conversación de
-              Whatsapp
+              "Guardar" al terminar de ordenar tus fotos y continuarás en
+              WhatsApp
             </span>
           </div>
         </div>
