@@ -10,9 +10,15 @@ import { useRequest } from '../context/useRequestHook';
 import { usePhotoContext } from '../context/usePhotosHook';
 import { enqueueSnackbar } from 'notistack';
 import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
 
 const getAuthToken = () => {
   return localStorage.getItem('token');
+};
+
+const formatDate = (photoAlbumDate: Date) => {
+  const date = new Date(photoAlbumDate);
+  return format(date, 'd/M/yyyy - HH:mm');
 };
 
 export const PhotoAlbumList = () => {
@@ -72,7 +78,10 @@ export const PhotoAlbumList = () => {
   if (error.error) return null;
 
   const sortedPhotoAlbums = [...photoAlbums].sort((a, b) => {
-    return a.isPending === b.isPending ? 0 : a.isPending ? -1 : 1;
+    if (a.isPending === b.isPending) {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+    return a.isPending ? -1 : 1;
   });
 
   return (
@@ -92,10 +101,10 @@ export const PhotoAlbumList = () => {
         >
           <div className="flex flex-col sm:items-start">
             <span className="font-semibold">Cliente:</span>
-            {photoAlbum.client.name && (
-              <span className="">{photoAlbum.client.name}</span>
-            )}
-            <span className="">{photoAlbum.client.phone}</span>
+            {photoAlbum.client.name && <span>{photoAlbum.client.name}</span>}
+            <span>{photoAlbum.client.phone}</span>
+            <span className="mt-2 text-xs font-semibold">Fecha:</span>
+            <span className="text-xs">{`${formatDate(photoAlbum.createdAt)}`}</span>
           </div>
           <div className="flex gap-3 sm:self-end">
             <Button

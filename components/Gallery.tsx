@@ -68,9 +68,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 300, tolerance: 20 },
-    }),
+    useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -244,36 +242,13 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
               {photoAlbumStatus ? (
                 <>
                   <OnBoarding />
-                  <div className="flex gap-2 self-start">
+                  {isAuthenticated && (
                     <Button
-                      onClick={() => {
-                        if (id) {
-                          handleSave(
-                            id,
-                            photos.map((photo) => photo.id),
-                            isAuthenticated
-                          );
-                        } else {
-                          console.error('ID is undefined');
-                        }
-                      }}
-                      variant="GALLERY"
-                      message={'Guardar'}
+                      onClick={handleDownload}
+                      variant="SECONDARY"
+                      message={'Descargar'}
                     />
-                    {isAuthenticated ? (
-                      <Button
-                        onClick={handleDownload}
-                        variant="SECONDARY"
-                        message={'Descargar'}
-                      />
-                    ) : (
-                      <Button
-                        variant="SECONDARY"
-                        message={'Agregar fotos'}
-                        onClick={handleAdd}
-                      />
-                    )}
-                  </div>
+                  )}
                 </>
               ) : (
                 <div className="flex">
@@ -294,6 +269,41 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
                 spacing={15}
                 padding={1}
               />
+              {!isLoadingMorePhotos && (
+                <div className="flex w-full flex-col items-end">
+                  <div className="items-end">
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => {
+                          if (id) {
+                            handleSave(
+                              id,
+                              photos.map((photo) => photo.id),
+                              isAuthenticated
+                            );
+                          } else {
+                            console.error('ID is undefined');
+                          }
+                        }}
+                        variant="GALLERY"
+                        message={'Guardar'}
+                      />
+                      {!isAuthenticated && (
+                        <Button
+                          variant="SECONDARY"
+                          message={'Agregar fotos'}
+                          onClick={handleAdd}
+                        />
+                      )}
+                    </div>
+                    {!isAuthenticated && (
+                      <p className="mt-2 w-full text-center text-sm text-green-700">
+                        Se continuará en Whatsapp
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
