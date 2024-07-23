@@ -50,6 +50,7 @@ const PhotoFrame = React.memo(
             width: overlay
               ? `calc(100% - ${2 * layoutOptions.padding}px)`
               : style.width,
+            zIndex: active ? 9999 : 'auto',
           }}
           className={clsx('photo-frame', {
             overlay: overlay,
