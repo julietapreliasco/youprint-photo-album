@@ -68,7 +68,9 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 50, tolerance: 10 },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -180,16 +182,6 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     );
   };
 
-  const handleAdd = () => {
-    openModal(
-      '¿Desea regresar a Whatsapp para enviar más fotos?',
-      () => {
-        window.location.href = ' https://wa.me/59892892300';
-      },
-      'Los cambios no guardados se perderán'
-    );
-  };
-
   const handleDownload = async () => {
     const zip = new JSZip();
 
@@ -198,7 +190,10 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
         try {
           const response = await fetch(photo.originalURL);
           const blob = await response.blob();
-          zip.file(`${index == 0 ? 'portada' : index}.jpeg`, blob);
+          zip.file(
+            `${index == photos.length - 1 ? 'Portada' : index}.jpeg`,
+            blob
+          );
         } catch (error) {
           console.error('Error fetching image:', error);
         }
@@ -216,7 +211,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
 
   if (error.error) return null;
 
-  const cover = photos[0] ? [photos[0]] : [];
+  const cover = photos.length ? [photos[photos.length - 1]] : [];
 
   return (
     <DndContext
@@ -261,7 +256,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
             </div>
             <div className="m-auto flex flex-col gap-4 md:w-[80%]">
               <PhotoAlbum
-                photos={photos.slice(1)}
+                photos={photos.slice(0, photos.length - 1)}
                 layout="rows"
                 rowConstraints={getRowConstraints()}
                 renderPhoto={renderPhoto}
@@ -270,9 +265,9 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
                 padding={1}
               />
               {!isLoadingMorePhotos && (
-                <div className="flex w-full flex-col items-end">
+                <div className="mt-5 flex w-full flex-col items-end">
                   <div className="items-end">
-                    <div className="flex gap-2">
+                    <div className="flex items-end justify-end gap-2">
                       <Button
                         onClick={() => {
                           if (id) {
@@ -288,16 +283,9 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
                         variant="GALLERY"
                         message={'Guardar'}
                       />
-                      {!isAuthenticated && (
-                        <Button
-                          variant="SECONDARY"
-                          message={'Agregar fotos'}
-                          onClick={handleAdd}
-                        />
-                      )}
                     </div>
                     {!isAuthenticated && (
-                      <p className="mt-2 w-full text-center text-sm text-green-700">
+                      <p className="mt-2 w-full text-center text-xs text-green-700">
                         Se continuará en Whatsapp
                       </p>
                     )}
