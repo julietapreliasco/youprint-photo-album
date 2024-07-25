@@ -68,9 +68,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: 300, tolerance: 20 },
-    }),
+    useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
