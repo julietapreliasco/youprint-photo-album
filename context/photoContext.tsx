@@ -59,7 +59,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
             { variant: 'success' }
           );
           if (!isAuthenticated) {
-            window.location.href = `https://wa.me/59892892300`;
+            window.location.href = ` https://wa.me/59892892300?text=Listo`;
           }
         }
 
@@ -82,7 +82,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
                 width,
                 height,
                 id: photo.optimizedURL,
-                isCover: index === 0,
+                isCover: index === photoAlbum.length - 1,
                 number: index,
                 client: client,
               };
@@ -97,7 +97,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
                 width: 1,
                 height: 1,
                 id: photo.optimizedURL,
-                isCover: index === 0,
+                isCover: index === photoAlbum.length - 1,
                 number: index,
                 client: client,
               };

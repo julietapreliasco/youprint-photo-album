@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <main className="flex min-h-screen flex-col bg-slate-50">
             <Header />
             <AdminNavBar />
-            <div className="flex-grow p-10">
+            <div className="flex-grow px-12 py-10">
               {children}
               <Loader />
               <ErrorMsg />
