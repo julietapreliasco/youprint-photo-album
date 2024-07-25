@@ -83,7 +83,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
                 height,
                 id: photo.optimizedURL,
                 isCover: index === photoAlbum.length - 1,
-                number: index,
+                number: index + 1,
                 client: client,
               };
             } catch (error) {

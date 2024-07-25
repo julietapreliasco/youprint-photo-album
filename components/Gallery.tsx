@@ -117,8 +117,8 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
   const updateIsCover = (photos: ExtendedPhoto[]): ExtendedPhoto[] => {
     return photos.map((photo, index) => ({
       ...photo,
-      isCover: index === 0,
-      number: index,
+      isCover: index === photos.length - 1,
+      number: index + 1,
     }));
   };
 
@@ -191,7 +191,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
           const response = await fetch(photo.originalURL);
           const blob = await response.blob();
           zip.file(
-            `${index == photos.length - 1 ? 'Portada' : index}.jpeg`,
+            `${index == photos.length - 1 ? 'Portada' : index + 1}.jpeg`,
             blob
           );
         } catch (error) {
