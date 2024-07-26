@@ -37,6 +37,10 @@ const PhotoAlbumSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  isOptimized: {
+    type: Boolean,
+    required: false,
+  },
 });
 
 export default mongoose.models.PhotoAlbum ||

@@ -40,6 +40,7 @@ export interface PhotoAlbum {
   createdAt: Date;
   updatedAt?: Date;
   isPending: boolean;
+  isOptimized?: boolean;
 }
 
 export interface ErrorType {
