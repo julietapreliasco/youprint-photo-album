@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import { PhotoFrameProps } from '../types';
 import { FaTrashAlt } from 'react-icons/fa';
+import { FaVideo } from 'react-icons/fa';
 import { useModal } from '../context/useModalHook';
 import { usePhotoContext } from '../context/usePhotosHook';
 
@@ -17,6 +18,7 @@ const PhotoFrame = React.memo(
         attributes,
         listeners,
         isCover,
+        isVideo,
         number,
         onLoad,
         photoAlbumStatus,
@@ -88,10 +90,17 @@ const PhotoFrame = React.memo(
                     <button
                       onClick={handleDelete}
                       onTouchStart={(e) => e.stopPropagation()}
-                      className="absolute right-2 top-3 m-0 flex max-w-full items-center truncate rounded bg-black bg-opacity-30 px-2 py-2 text-base text-white sm:right-3 lg:right-4 lg:top-4"
+                      className="absolute right-2 top-3 z-20 m-0 flex max-w-full items-center truncate rounded bg-black bg-opacity-30 px-2 py-2 text-base text-white sm:right-3 lg:right-4 lg:top-4"
                     >
                       <FaTrashAlt />
                     </button>
+                    {isVideo && (
+                      <div className="absolute inset-0 z-10 flex items-center justify-center">
+                        <div className="flex items-center justify-center rounded bg-black bg-opacity-30 p-4 text-base text-white shadow-lg">
+                          <FaVideo />
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
               </>

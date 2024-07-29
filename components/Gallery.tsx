@@ -151,6 +151,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
         activeIndex={activeIndex}
         {...props}
         photoAlbumStatus={photoAlbumStatus}
+        isVideo={props.photo.isVideo}
       />
     );
   };
@@ -168,6 +169,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
           return {
             originalURL: photo?.originalURL || '',
             optimizedURL: photo?.src || '',
+            isVideo: photo?.isVideo,
           };
         });
 
@@ -185,20 +187,21 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
         try {
           const response = await fetch(photo.originalURL);
           const blob = await response.blob();
+          const contentType = blob.type;
+          const extension = contentType.startsWith('video/') ? 'mp4' : 'jpeg';
           zip.file(
-            `${index == photos.length - 1 ? 'Portada' : index + 1}.jpeg`,
+            `${index === photos.length - 1 ? 'Portada' : index + 1}.${extension}`,
             blob
           );
         } catch (error) {
-          console.error('Error fetching image:', error);
+          console.error('Error fetching image or video:', error);
         }
       });
 
       await Promise.all(fetchPromises);
 
-      zip.generateAsync({ type: 'blob' }).then((content) => {
-        saveAs(content, `${client.name ?? client.phone}_photo_album.zip`);
-      });
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, `${client.name ?? client.phone}_photo_album.zip`);
     } catch (error) {
       console.error('Error generating zip:', error);
     }

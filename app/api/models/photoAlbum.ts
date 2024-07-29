@@ -12,6 +12,10 @@ const PhotoAlbumSchema = new Schema({
         type: String,
         required: false,
       },
+      isVideo: {
+        type: Boolean,
+        required: false,
+      },
     },
   ],
   client: {

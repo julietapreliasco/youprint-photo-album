@@ -6,6 +6,7 @@ function SortablePhotoFrame(
   props: SortablePhotoProps & {
     activeIndex?: number;
     photoAlbumStatus?: boolean;
+    isVideo?: boolean;
   }
 ) {
   const { photo, activeIndex, photoAlbumStatus } = props;
@@ -30,6 +31,7 @@ function SortablePhotoFrame(
       attributes={attributes}
       listeners={listeners}
       photoAlbumStatus={photoAlbumStatus}
+      isVideo={photo.isVideo}
       {...props}
     />
   );
