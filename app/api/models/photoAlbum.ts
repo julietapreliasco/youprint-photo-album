@@ -12,6 +12,10 @@ const PhotoAlbumSchema = new Schema({
         type: String,
         required: false,
       },
+      isVideo: {
+        type: Boolean,
+        required: false,
+      },
     },
   ],
   client: {
@@ -36,6 +40,10 @@ const PhotoAlbumSchema = new Schema({
   isPending: {
     type: Boolean,
     required: true,
+  },
+  isOptimized: {
+    type: Boolean,
+    required: false,
   },
 });
 

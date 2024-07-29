@@ -7,6 +7,7 @@ export type PhotoFrameProps = SortablePhotoProps & {
   attributes?: Partial<React.HTMLAttributes<HTMLDivElement>>;
   listeners?: Partial<React.HTMLAttributes<HTMLDivElement>>;
   isCover?: boolean;
+  isVideo?: boolean;
   number?: number;
   onLoad?: () => void;
   photoAlbumStatus?: boolean;
@@ -21,6 +22,7 @@ export interface ExtendedPhoto extends Photo {
   optimizedURL?: string;
   id: string;
   isCover: boolean;
+  isVideo: boolean;
   number: number;
   client: { name?: string; phone: string };
 }
@@ -28,6 +30,7 @@ export interface ExtendedPhoto extends Photo {
 export interface PhotoAlbumPhotos {
   originalURL: string;
   optimizedURL: string;
+  isVideo?: boolean;
 }
 
 export interface PhotoAlbum {
@@ -40,6 +43,7 @@ export interface PhotoAlbum {
   createdAt: Date;
   updatedAt?: Date;
   isPending: boolean;
+  isOptimized?: boolean;
 }
 
 export interface ErrorType {

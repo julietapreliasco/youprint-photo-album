@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { PhotoAlbum } from 'react-photo-album';
-import { useWindowSize } from 'react-use';
 import {
   closestCenter,
   DndContext,
@@ -32,14 +31,14 @@ import OnBoarding from './Onboarding';
 import { usePhotoContext } from '../context/usePhotosHook';
 import { useAuth } from '../context/useAuthHook';
 import { FaExclamationCircle } from 'react-icons/fa';
-import { PaginationLoader } from './ui/PaginationLoader';
+import { ProgressLoader } from './ui/ProgressLoader';
+import usePolling from '../hooks/polling';
 
 interface GalleryProps {
   id: string;
 }
 
 export const Gallery: React.FC<GalleryProps> = ({ id }) => {
-  const { width } = useWindowSize();
   const { photos, setPhotos, handlePhotoAlbum, isLoadingMorePhotos } =
     usePhotoContext();
   const { setError, error, setLoading } = useRequest();
@@ -48,20 +47,14 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
   const [photoAlbumStatus, setPhotoAlbumStatus] = useState<boolean | undefined>(
     undefined
   );
-
   const [client, setClient] = useState<{ name?: string; phone: string }>({
     name: '',
     phone: '',
   });
+  const { isOptimized, albumData } = usePolling(id);
 
   const getRowConstraints = () => {
-    if (width < 500) {
-      return { minPhotos: 1, maxPhotos: 2 };
-    } else if (width < 1200) {
-      return { minPhotos: 1, maxPhotos: 3 };
-    } else {
-      return { minPhotos: 1, maxPhotos: 4 };
-    }
+    return { minPhotos: 1, maxPhotos: 2 };
   };
 
   const renderedPhotos = useRef<{ [key: string]: SortablePhotoProps }>({});
@@ -77,37 +70,39 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
   );
 
   useEffect(() => {
-    const getPhotoAlbum = async () => {
-      if (id) {
-        try {
-          setLoading(true);
-
-          const response = await fetch(`/api/photo-album/${id}`);
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error);
-          }
-          const data = await response.json();
-
-          setClient(data.client);
-          setPhotoAlbumStatus(data.isPending);
-          await handlePhotoAlbum(id, data.photos, false, data.client);
-        } catch (error) {
-          let errorMessage = 'An unknown error occurred';
-          if (error instanceof Error) {
-            errorMessage = error.message;
-          }
-          setError({ error: true, message: errorMessage });
-          setLoading(false);
+    if (albumData) {
+      try {
+        setLoading(true);
+        setClient(albumData.client);
+        setPhotoAlbumStatus(albumData.isPending);
+        handlePhotoAlbum(
+          id,
+          albumData.photos as PhotoAlbumPhotos[],
+          false,
+          albumData.client
+        );
+      } catch (error) {
+        let errorMessage = 'An unknown error occurred';
+        if (error instanceof Error) {
+          errorMessage = error.message;
         }
+        setError({ error: true, message: errorMessage });
+        setLoading(false);
       }
-    };
-    getPhotoAlbum();
+    }
 
     return () => {
       setPhotos([]);
     };
-  }, [handlePhotoAlbum, id, setError, setLoading, setPhotos]);
+  }, [
+    albumData,
+    handlePhotoAlbum,
+    id,
+    setError,
+    setLoading,
+    setPhotos,
+    isOptimized,
+  ]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier>();
   const activeIndex = activeId
@@ -117,8 +112,8 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
   const updateIsCover = (photos: ExtendedPhoto[]): ExtendedPhoto[] => {
     return photos.map((photo, index) => ({
       ...photo,
-      isCover: index === 0,
-      number: index,
+      isCover: index === photos.length - 1,
+      number: index + 1,
     }));
   };
 
@@ -156,6 +151,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
         activeIndex={activeIndex}
         {...props}
         photoAlbumStatus={photoAlbumStatus}
+        isVideo={props.photo.isVideo}
       />
     );
   };
@@ -173,6 +169,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
           return {
             originalURL: photo?.originalURL || '',
             optimizedURL: photo?.src || '',
+            isVideo: photo?.isVideo,
           };
         });
 
@@ -190,20 +187,21 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
         try {
           const response = await fetch(photo.originalURL);
           const blob = await response.blob();
+          const contentType = blob.type;
+          const extension = contentType.startsWith('video/') ? 'mp4' : 'jpeg';
           zip.file(
-            `${index == photos.length - 1 ? 'Portada' : index}.jpeg`,
+            `${index === photos.length - 1 ? 'Portada' : index + 1}.${extension}`,
             blob
           );
         } catch (error) {
-          console.error('Error fetching image:', error);
+          console.error('Error fetching image or video:', error);
         }
       });
 
       await Promise.all(fetchPromises);
 
-      zip.generateAsync({ type: 'blob' }).then((content) => {
-        saveAs(content, `${client.name ?? client.phone}_photo_album.zip`);
-      });
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, `${client.name ?? client.phone}_photo_album.zip`);
     } catch (error) {
       console.error('Error generating zip:', error);
     }
@@ -301,7 +299,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
           <PhotoFrame overlay {...renderedPhotos.current[activeId]} />
         )}
       </DragOverlay>
-      {isLoadingMorePhotos && <PaginationLoader />}
+      {isLoadingMorePhotos && <ProgressLoader />}
     </DndContext>
   );
 };

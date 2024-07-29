@@ -1,5 +1,7 @@
+import { PhotoAlbumPhotos } from '../../../types';
+
 export interface PhotoAlbum {
-  photos: string[];
+  photos: PhotoAlbumPhotos[];
   client: {
     name?: string;
     phone: string;

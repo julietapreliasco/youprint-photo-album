@@ -83,8 +83,9 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
                 height,
                 id: photo.optimizedURL,
                 isCover: index === photoAlbum.length - 1,
-                number: index,
+                number: index + 1,
                 client: client,
+                isVideo: photo.isVideo,
               };
             } catch (error) {
               console.error(
@@ -100,6 +101,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
                 isCover: index === photoAlbum.length - 1,
                 number: index,
                 client: client,
+                isVideo: photo.isVideo,
               };
             }
           })

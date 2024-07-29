@@ -1,8 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Loader } from '../../../components/ui/Loader';
+
 import { Gallery } from '../../../components/Gallery';
+import { ProgressLoader } from '../../../components/ui/ProgressLoader';
 
 export default function GalleryPage() {
   const params = useParams();
@@ -15,5 +16,5 @@ export default function GalleryPage() {
     }
   }, [id]);
 
-  return idLoaded ? <Gallery id={idLoaded} /> : <Loader />;
+  return idLoaded ? <Gallery id={idLoaded} /> : <ProgressLoader />;
 }
