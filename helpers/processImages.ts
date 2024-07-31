@@ -89,6 +89,10 @@ export async function processImages(albumId: string) {
 
     const optimizedPhotos = await Promise.all(uploadPromises);
 
+    const missingOptimizedLink = optimizedPhotos.some(
+      (photo) => photo.optimizedURL === null
+    );
+
     await PhotoAlbumModel.findByIdAndUpdate(
       albumId,
       {
@@ -96,7 +100,7 @@ export async function processImages(albumId: string) {
           photos: optimizedPhotos,
           isPending: true,
           updatedAt: new Date(),
-          isOptimized: true,
+          isOptimized: missingOptimizedLink ? false : true,
         },
       },
       { new: true }
