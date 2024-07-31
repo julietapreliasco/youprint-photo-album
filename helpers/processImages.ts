@@ -70,24 +70,30 @@ export async function processImages(albumId: string) {
     const uploadPromises = album.photos.map(async (photo: PhotoAlbumPhotos) => {
       const contentType = await getContentType(photo.originalURL);
 
-      if (contentType?.startsWith('video/')) {
+      if (contentType?.startsWith('video/') && !photo.optimizedURL) {
         const thumbnailURL = await generateThumbnail(photo.originalURL);
         return {
           originalURL: photo.originalURL,
           optimizedURL: thumbnailURL,
           isVideo: true,
         };
-      } else {
+      } else if (!photo.optimizedURL) {
         const optimizedURL = await uploadImage(photo.originalURL);
         return {
           originalURL: photo.originalURL,
           optimizedURL,
           isVideo: false,
         };
+      } else {
+        return photo;
       }
     });
 
     const optimizedPhotos = await Promise.all(uploadPromises);
+
+    const missingOptimizedLink = optimizedPhotos.some(
+      (photo) => photo.optimizedURL === null
+    );
 
     await PhotoAlbumModel.findByIdAndUpdate(
       albumId,
@@ -96,7 +102,7 @@ export async function processImages(albumId: string) {
           photos: optimizedPhotos,
           isPending: true,
           updatedAt: new Date(),
-          isOptimized: true,
+          isOptimized: !missingOptimizedLink,
         },
       },
       { new: true }

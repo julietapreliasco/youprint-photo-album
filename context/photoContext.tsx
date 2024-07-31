@@ -63,7 +63,7 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
           }
         }
 
-        setLoading(true);
+        if (!isUpdating) setLoading(true);
         const batchPhotosData = await Promise.all(
           photoAlbum.map(async (photo, index) => {
             if (!photo.optimizedURL) {
