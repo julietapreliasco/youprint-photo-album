@@ -23,20 +23,14 @@ const getContentType = async (url: string) => {
 const uploadImage = async (url: string) => {
   try {
     const result = await cloudinary.uploader.upload(url, {
-      quality: 'auto',
+      quality: 'auto:low',
       fetch_format: 'auto',
       format: 'webp',
       folder: 'photo-albums',
     });
     return result.secure_url;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(
-        `Error uploading image: ${url} - ${error.message} - ${error.response?.status} - ${error.response?.data}`
-      );
-    } else {
-      console.error(`Unknown error uploading image: ${url} - ${error}`);
-    }
+    console.error(`Error uploading image: ${url}`, error);
     return null;
   }
 };
@@ -45,18 +39,12 @@ const generateThumbnail = async (url: string) => {
   try {
     const result = await cloudinary.uploader.upload(url, {
       resource_type: 'video',
-      eager: [{ format: 'webp', quality: 'auto' }],
+      eager: [{ format: 'webp', quality: 'auto:low' }],
       eager_async: false,
     });
     return result.eager[0].secure_url;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(
-        `Error generating thumbnail: ${url} - ${error.message} - ${error.response?.status} - ${error.response?.data}`
-      );
-    } else {
-      console.error(`Unknown error generating thumbnail: ${url} - ${error}`);
-    }
+    console.error(`Error generating thumbnail: ${url}`, error);
     return null;
   }
 };
@@ -68,24 +56,26 @@ export async function processImages(albumId: string) {
     const album = await PhotoAlbumModel.findById(albumId);
 
     const uploadPromises = album.photos.map(async (photo: PhotoAlbumPhotos) => {
+      if (photo.optimizedURL) {
+        return photo;
+      }
+
       const contentType = await getContentType(photo.originalURL);
 
-      if (contentType?.startsWith('video/') && !photo.optimizedURL) {
+      if (contentType?.startsWith('video/')) {
         const thumbnailURL = await generateThumbnail(photo.originalURL);
         return {
           originalURL: photo.originalURL,
           optimizedURL: thumbnailURL,
           isVideo: true,
         };
-      } else if (!photo.optimizedURL) {
+      } else {
         const optimizedURL = await uploadImage(photo.originalURL);
         return {
           originalURL: photo.originalURL,
           optimizedURL,
           isVideo: false,
         };
-      } else {
-        return photo;
       }
     });
 
@@ -108,15 +98,6 @@ export async function processImages(albumId: string) {
       { new: true }
     );
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(
-        'Error al procesar imágenes:',
-        error.message,
-        error.response?.status,
-        error.response?.data
-      );
-    } else {
-      console.error('Error desconocido al procesar imágenes:', error);
-    }
+    console.error('Error al procesar imágenes:', error);
   }
 }
