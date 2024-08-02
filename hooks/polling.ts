@@ -29,6 +29,21 @@ const usePolling = (albumId: string) => {
     }
   };
 
+  const fetchAlbumData = async () => {
+    try {
+      const response = await fetch(`/api/photo-album/${albumId}`);
+      if (!response.ok) {
+        throw new Error('Error al obtener los datos del álbum');
+      }
+      const data = await response.json();
+      setAlbumData(data);
+      return data;
+    } catch (error) {
+      console.error('Error al obtener los datos del álbum:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     if (!albumId) return;
 
@@ -52,7 +67,7 @@ const usePolling = (albumId: string) => {
             if (!retrySuccessful) {
               console.error('Reintento de optimización fallido.');
             } else {
-              setAlbumData(data);
+              fetchAlbumData();
             }
           } else {
             attempts.current += 1;
