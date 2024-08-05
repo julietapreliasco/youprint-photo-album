@@ -20,45 +20,59 @@ const getContentType = async (url: string) => {
   }
 };
 
-const uploadImage = async (url: string) => {
-  try {
-    const result = await cloudinary.uploader.upload(url, {
-      quality: 'auto:low',
-      fetch_format: 'auto',
-      format: 'webp',
-      folder: 'photo-albums',
-    });
-    return result.secure_url;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(
-        `Error uploading image: ${url} - ${error.message} - ${error.response?.status} - ${error.response?.data}`
-      );
-    } else {
-      console.error(`Unknown error uploading image: ${url} - ${error}`);
+const uploadImage = async (
+  url: string,
+  retries = 3
+): Promise<string | null> => {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const result = await cloudinary.uploader.upload(url, {
+        quality: 'auto:low',
+        fetch_format: 'auto',
+        format: 'webp',
+        folder: 'photo-albums',
+      });
+      return result.secure_url;
+    } catch (error) {
+      console.error(`Attempt ${attempt + 1} failed to upload image: ${url}`);
+      if (axios.isAxiosError(error)) {
+        console.error(
+          `Error uploading image: ${url} - ${error.message} - ${error.response?.status} - ${error.response?.data}`
+        );
+      } else {
+        console.error(`Unknown error uploading image: ${url} - ${error}`);
+      }
     }
-    return null;
   }
+  return null;
 };
 
-const generateThumbnail = async (url: string) => {
-  try {
-    const result = await cloudinary.uploader.upload(url, {
-      resource_type: 'video',
-      eager: [{ format: 'webp', quality: 'auto:low' }],
-      eager_async: false,
-    });
-    return result.eager[0].secure_url;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
+const generateThumbnail = async (
+  url: string,
+  retries = 3
+): Promise<string | null> => {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const result = await cloudinary.uploader.upload(url, {
+        resource_type: 'video',
+        eager: [{ format: 'webp', quality: 'auto:low' }],
+        eager_async: false,
+      });
+      return result.eager[0].secure_url;
+    } catch (error) {
       console.error(
-        `Error generating thumbnail: ${url} - ${error.message} - ${error.response?.status} - ${error.response?.data}`
+        `Attempt ${attempt + 1} failed to generate thumbnail: ${url}`
       );
-    } else {
-      console.error(`Unknown error generating thumbnail: ${url} - ${error}`);
+      if (axios.isAxiosError(error)) {
+        console.error(
+          `Error generating thumbnail: ${url} - ${error.message} - ${error.response?.status} - ${error.response?.data}`
+        );
+      } else {
+        console.error(`Unknown error generating thumbnail: ${url} - ${error}`);
+      }
     }
-    return null;
   }
+  return null;
 };
 
 export async function processImages(albumId: string) {
