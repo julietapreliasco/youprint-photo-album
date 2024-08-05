@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRequest } from '../context/useRequestHook';
 import { PhotoAlbum } from '../types';
 
-const MAX_ATTEMPTS = 4;
+const MAX_ATTEMPTS = 3;
 
 const usePolling = (albumId: string) => {
   const [isOptimized, setIsOptimized] = useState<boolean | undefined>(false);
@@ -51,12 +51,10 @@ const usePolling = (albumId: string) => {
 
     const checkOptimization = async () => {
       try {
-        const response = await fetch(`/api/photo-album/${albumId}`);
-        const data = await response.json();
+        const data = await fetchAlbumData();
 
-        if (data.isOptimized) {
+        if (data && data.isOptimized) {
           setIsOptimized(true);
-          setAlbumData(data);
           setLoading(false);
           clearInterval(intervalId);
         } else {
@@ -74,7 +72,7 @@ const usePolling = (albumId: string) => {
           }
         }
       } catch (error) {
-        console.error('Error al verificar estado de optimización:');
+        console.error('Error al verificar estado de optimización:', error);
       }
     };
 

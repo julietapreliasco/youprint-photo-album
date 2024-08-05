@@ -27,7 +27,7 @@ const uploadImage = async (
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
       const result = await cloudinary.uploader.upload(url, {
-        quality: 'low',
+        quality: 20,
         fetch_format: 'auto',
         format: 'webp',
         folder: 'photo-albums',
@@ -55,7 +55,7 @@ const generateThumbnail = async (
     try {
       const result = await cloudinary.uploader.upload(url, {
         resource_type: 'video',
-        eager: [{ format: 'webp', quality: 'low' }],
+        eager: [{ format: 'webp', quality: 20 }],
         eager_async: false,
       });
       return result.eager[0].secure_url;
@@ -109,18 +109,33 @@ export async function processImages(albumId: string) {
       (photo) => photo.optimizedURL === null
     );
 
-    await PhotoAlbumModel.findByIdAndUpdate(
-      albumId,
-      {
-        $set: {
-          photos: optimizedPhotos,
-          isPending: true,
-          updatedAt: new Date(),
-          isOptimized: !missingOptimizedLink,
+    if (missingOptimizedLink) {
+      await PhotoAlbumModel.findByIdAndUpdate(
+        albumId,
+        {
+          $set: {
+            photos: optimizedPhotos,
+            isPending: true,
+            updatedAt: new Date(),
+            isOptimized: false,
+          },
         },
-      },
-      { new: true }
-    );
+        { new: true }
+      );
+    } else {
+      await PhotoAlbumModel.findByIdAndUpdate(
+        albumId,
+        {
+          $set: {
+            photos: optimizedPhotos,
+            isPending: true,
+            updatedAt: new Date(),
+            isOptimized: true,
+          },
+        },
+        { new: true }
+      );
+    }
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(
