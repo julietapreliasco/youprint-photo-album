@@ -32,7 +32,6 @@ import { usePhotoContext } from '../context/usePhotosHook';
 import { useAuth } from '../context/useAuthHook';
 import { FaExclamationCircle } from 'react-icons/fa';
 import { ProgressLoader } from './ui/ProgressLoader';
-import usePolling from '../hooks/polling';
 
 interface GalleryProps {
   id: string;
@@ -51,7 +50,6 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     name: '',
     phone: '',
   });
-  const { isOptimized, albumData } = usePolling(id);
 
   const getRowConstraints = () => {
     return { minPhotos: 1, maxPhotos: 2 };
@@ -70,39 +68,37 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
   );
 
   useEffect(() => {
-    if (albumData) {
-      try {
-        setLoading(true);
-        setClient(albumData.client);
-        setPhotoAlbumStatus(albumData.isPending);
-        handlePhotoAlbum(
-          id,
-          albumData.photos as PhotoAlbumPhotos[],
-          false,
-          albumData.client
-        );
-      } catch (error) {
-        let errorMessage = 'An unknown error occurred';
-        if (error instanceof Error) {
-          errorMessage = error.message;
+    const getPhotoAlbum = async () => {
+      if (id) {
+        try {
+          setLoading(true);
+
+          const response = await fetch(`/api/photo-album/${id}`);
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error);
+          }
+          const data = await response.json();
+
+          setClient(data.client);
+          setPhotoAlbumStatus(data.isPending);
+          await handlePhotoAlbum(id, data.photos, false, data.client);
+        } catch (error) {
+          let errorMessage = 'An unknown error occurred';
+          if (error instanceof Error) {
+            errorMessage = error.message;
+          }
+          setError({ error: true, message: errorMessage });
+          setLoading(false);
         }
-        setError({ error: true, message: errorMessage });
-        setLoading(false);
       }
-    }
+    };
+    getPhotoAlbum();
 
     return () => {
       setPhotos([]);
     };
-  }, [
-    albumData,
-    handlePhotoAlbum,
-    id,
-    setError,
-    setLoading,
-    setPhotos,
-    isOptimized,
-  ]);
+  }, [handlePhotoAlbum, id, setError, setLoading, setPhotos]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier>();
   const activeIndex = activeId
