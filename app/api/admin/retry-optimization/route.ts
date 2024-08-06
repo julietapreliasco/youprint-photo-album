@@ -25,7 +25,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await processImages(album._id);
+    const { processedPhotos, isOptimized } = await processImages(album.photos);
+
+    await PhotoAlbumModel.findByIdAndUpdate(
+      albumId,
+      {
+        photos: processedPhotos,
+        isOptimized: isOptimized,
+        updatedAt: new Date(),
+      },
+      { new: true }
+    );
 
     return NextResponse.json(
       { message: 'Images reprocessed successfully' },

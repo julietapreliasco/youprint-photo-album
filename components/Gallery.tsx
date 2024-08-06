@@ -32,6 +32,7 @@ import { usePhotoContext } from '../context/usePhotosHook';
 import { useAuth } from '../context/useAuthHook';
 import { FaExclamationCircle } from 'react-icons/fa';
 import { ProgressLoader } from './ui/ProgressLoader';
+import usePolling from '../hooks/polling';
 
 interface GalleryProps {
   id: string;
@@ -51,6 +52,9 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     phone: '',
   });
 
+  const { albumData, isOptimized } = usePolling(id);
+
+  // const [isOptimized, setIsOptimized] = useState(false);
   const getRowConstraints = () => {
     return { minPhotos: 1, maxPhotos: 2 };
   };
@@ -69,20 +73,17 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
 
   useEffect(() => {
     const getPhotoAlbum = async () => {
-      if (id) {
+      if (albumData) {
         try {
           setLoading(true);
-
-          const response = await fetch(`/api/photo-album/${id}`);
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error);
-          }
-          const data = await response.json();
-
-          setClient(data.client);
-          setPhotoAlbumStatus(data.isPending);
-          await handlePhotoAlbum(id, data.photos, false, data.client);
+          setClient(albumData.client);
+          setPhotoAlbumStatus(albumData.isPending);
+          handlePhotoAlbum(
+            id,
+            albumData.photos as PhotoAlbumPhotos[],
+            false,
+            albumData.client
+          );
         } catch (error) {
           let errorMessage = 'An unknown error occurred';
           if (error instanceof Error) {
@@ -98,7 +99,15 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     return () => {
       setPhotos([]);
     };
-  }, [handlePhotoAlbum, id, setError, setLoading, setPhotos]);
+  }, [
+    handlePhotoAlbum,
+    id,
+    setError,
+    setLoading,
+    setPhotos,
+    isOptimized,
+    albumData,
+  ]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier>();
   const activeIndex = activeId
