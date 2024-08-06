@@ -51,12 +51,17 @@ const usePolling = (albumId: string) => {
 
     const checkOptimization = async () => {
       try {
-        const data = await fetchAlbumData();
+        const response = await fetch(`/api/photo-album/${albumId}`);
+        if (!response.ok) {
+          throw new Error('Error al obtener los datos del álbum');
+        }
+        const data = await response.json();
 
         if (data && data.isOptimized) {
           setIsOptimized(true);
           setLoading(false);
           clearInterval(intervalId);
+          setAlbumData(data);
         } else {
           setIsOptimized(false);
           if (attempts.current >= MAX_ATTEMPTS) {

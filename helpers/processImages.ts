@@ -2,6 +2,8 @@ import cloudinary from '../cloudinaryConfig';
 import axios from 'axios';
 
 const MAX_RETRIES = 5;
+export const FALLBACK_IMAGE_URL =
+  'https://asset.cloudinary.com/dkzstcvny/69c575507342915a7c18044623b92aa9';
 
 const getContentType = async (url: string) => {
   try {
@@ -67,7 +69,12 @@ export const processImages = async (
       const contentType = await getContentType(photo.originalURL);
       const isVideo = contentType?.startsWith('video/');
 
-      while (!optimizedURL && attempt < MAX_RETRIES) {
+      while (
+        (!optimizedURL ||
+          optimizedURL === FALLBACK_IMAGE_URL ||
+          optimizedURL === photo.originalURL) &&
+        attempt < MAX_RETRIES
+      ) {
         if (isVideo) {
           optimizedURL = await generateThumbnail(photo.originalURL);
         } else {
@@ -83,7 +90,8 @@ export const processImages = async (
       }
 
       if (!optimizedURL) {
-        throw new Error(`Failed to optimize image: ${photo.originalURL}`);
+        optimizedURL = isVideo ? FALLBACK_IMAGE_URL : photo.originalURL;
+        console.error(`Failed to optimize image: ${photo.originalURL}`);
       }
 
       return {
@@ -96,6 +104,8 @@ export const processImages = async (
 
   return {
     processedPhotos,
-    isOptimized: true,
+    isOptimized: processedPhotos.every(
+      (photo) => photo.optimizedURL !== photo.originalURL || FALLBACK_IMAGE_URL
+    ),
   };
 };
