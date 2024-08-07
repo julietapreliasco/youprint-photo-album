@@ -32,7 +32,7 @@ import { usePhotoContext } from '../context/usePhotosHook';
 import { useAuth } from '../context/useAuthHook';
 import { FaExclamationCircle } from 'react-icons/fa';
 import { ProgressLoader } from './ui/ProgressLoader';
-import usePolling from '../hooks/polling';
+import useFetchWithOptimizationCheck from '../hooks/useFetchWithOptimizationCheck';
 
 interface GalleryProps {
   id: string;
@@ -52,9 +52,8 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     phone: '',
   });
 
-  const { albumData, isOptimized } = usePolling(id);
+  const { albumData, isOptimized } = useFetchWithOptimizationCheck(id);
 
-  // const [isOptimized, setIsOptimized] = useState(false);
   const getRowConstraints = () => {
     return { minPhotos: 1, maxPhotos: 2 };
   };
@@ -227,7 +226,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
         {cover?.length !== 0 && (
           <>
             <div className="m-auto flex flex-wrap items-center justify-between gap-3 pb-10 md:w-[80%]">
-              <div className="pb-10">
+              <div className="pb-5">
                 <PhotoAlbum
                   photos={cover}
                   layout="rows"
@@ -241,11 +240,13 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
                 <>
                   <OnBoarding />
                   {isAuthenticated && (
-                    <Button
-                      onClick={handleDownload}
-                      variant="SECONDARY"
-                      message={'Descargar'}
-                    />
+                    <div className="flex w-full justify-end">
+                      <Button
+                        onClick={handleDownload}
+                        variant="SECONDARY"
+                        message={'Descargar'}
+                      />
+                    </div>
                   )}
                 </>
               ) : (

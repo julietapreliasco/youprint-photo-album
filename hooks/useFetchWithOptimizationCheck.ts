@@ -1,14 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRequest } from '../context/useRequestHook';
 import { PhotoAlbum } from '../types';
 
-const MAX_ATTEMPTS = 3;
-
-const usePolling = (albumId: string) => {
+const useFetchWithOptimizationCheck = (albumId: string) => {
   const [isOptimized, setIsOptimized] = useState<boolean | undefined>(false);
   const [albumData, setAlbumData] = useState<PhotoAlbum | null>(null);
   const { setLoading } = useRequest();
-  const attempts = useRef(0);
 
   const retryOptimization = async (albumId: string) => {
     try {
@@ -60,20 +57,14 @@ const usePolling = (albumId: string) => {
         if (data && data.isOptimized) {
           setIsOptimized(true);
           setLoading(false);
-          clearInterval(intervalId);
           setAlbumData(data);
         } else {
           setIsOptimized(false);
-          if (attempts.current >= MAX_ATTEMPTS) {
-            clearInterval(intervalId);
-            const retrySuccessful = await retryOptimization(albumId);
-            if (!retrySuccessful) {
-              console.error('Reintento de optimización fallido.');
-            } else {
-              fetchAlbumData();
-            }
+          const retrySuccessful = await retryOptimization(albumId);
+          if (!retrySuccessful) {
+            console.error('Reintento de optimización fallido.');
           } else {
-            attempts.current += 1;
+            fetchAlbumData();
           }
         }
       } catch (error) {
@@ -81,12 +72,9 @@ const usePolling = (albumId: string) => {
       }
     };
 
-    const intervalId = setInterval(checkOptimization, 5000);
-
     checkOptimization();
 
     return () => {
-      clearInterval(intervalId);
       setLoading(false);
     };
   }, [albumId, setLoading]);
@@ -94,4 +82,4 @@ const usePolling = (albumId: string) => {
   return { isOptimized, albumData };
 };
 
-export default usePolling;
+export default useFetchWithOptimizationCheck;

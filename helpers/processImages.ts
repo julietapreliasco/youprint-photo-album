@@ -59,15 +59,15 @@ const generateThumbnail = async (
 };
 
 export const processImages = async (
-  photos: { originalURL: string; optimizedUrl?: string | null }[]
+  photos: { originalURL: string; optimizedURL?: string | null }[]
 ) => {
   const processedPhotos = await Promise.all(
     photos.map(async (photo) => {
-      let optimizedURL = photo?.optimizedUrl;
+      let optimizedURL = photo.optimizedURL;
       let attempt = 0;
 
       const contentType = await getContentType(photo.originalURL);
-      const isVideo = contentType?.startsWith('video/');
+      const isVideo = (await contentType?.startsWith('video/')) || false;
 
       while (
         (!optimizedURL ||
