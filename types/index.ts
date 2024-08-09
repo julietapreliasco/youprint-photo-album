@@ -28,6 +28,7 @@ export interface ExtendedPhoto extends Photo {
 }
 
 export interface PhotoAlbumPhotos {
+  _id?: string;
   originalURL: string;
   optimizedURL: string;
   isVideo?: boolean;

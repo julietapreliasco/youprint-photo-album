@@ -7,7 +7,7 @@ import connectDB from '../../config/db';
 import PhotoAlbumModel from '../../models/photoAlbum';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   try {
     await connectDB();
     const body = await req.json();

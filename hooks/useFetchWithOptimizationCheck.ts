@@ -10,7 +10,7 @@ const useFetchWithOptimizationCheck = (albumId: string) => {
   const retryOptimization = async (albumId: string) => {
     try {
       const response = await fetch('/api/admin/retry-optimization', {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
