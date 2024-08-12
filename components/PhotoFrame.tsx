@@ -23,6 +23,7 @@ const PhotoFrame = React.memo(
         onLoad,
         photoAlbumStatus,
         isAuthenticated,
+        id,
       } = props;
       const { alt, style, ...restImageProps } = imageProps;
 
@@ -36,9 +37,9 @@ const PhotoFrame = React.memo(
           | React.TouchEvent<HTMLButtonElement>
       ) => {
         event.stopPropagation();
-        openModal('¿Desea eliminar esta foto?', () =>
-          deletePhoto(imageProps.src)
-        );
+        if (id) {
+          openModal('¿Desea eliminar esta foto?', () => deletePhoto(id));
+        }
       };
 
       const handleLoad = () => {

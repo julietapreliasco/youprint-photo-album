@@ -12,6 +12,7 @@ export type PhotoFrameProps = SortablePhotoProps & {
   isAuthenticated?: boolean;
   onLoad?: () => void;
   photoAlbumStatus?: boolean;
+  id?: string;
 };
 
 export type SortablePhotoProps = RenderPhotoProps<ExtendedPhoto> & {

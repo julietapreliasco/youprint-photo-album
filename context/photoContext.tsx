@@ -126,11 +126,20 @@ export const PhotoProvider = ({ children }: { children: ReactNode }) => {
     []
   );
 
-  const deletePhoto = useCallback((photoId: string) => {
-    setPhotos((prevPhotos) =>
-      prevPhotos.filter((photo) => photo.id !== photoId)
-    );
-  }, []);
+  const deletePhoto = useCallback(
+    (photoId: string) => {
+      setPhotos((prevPhotos) => {
+        const updatedPhotos = prevPhotos.filter(
+          (photo) => photo.id !== photoId
+        );
+        return updatedPhotos.map((photo, index) => ({
+          ...photo,
+          number: index + 1,
+        }));
+      });
+    },
+    [setPhotos]
+  );
 
   const value = useMemo(
     () => ({

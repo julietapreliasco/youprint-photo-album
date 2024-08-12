@@ -34,6 +34,7 @@ function SortablePhotoFrame(
       photoAlbumStatus={photoAlbumStatus}
       isVideo={photo.isVideo}
       isAuthenticated={isAuthenticated}
+      id={photo.id}
       {...props}
     />
   );
