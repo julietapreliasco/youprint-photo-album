@@ -156,6 +156,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
         {...props}
         photoAlbumStatus={photoAlbumStatus}
         isVideo={props.photo.isVideo}
+        isAuthenticated={isAuthenticated}
       />
     );
   };
@@ -174,6 +175,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
             originalURL: photo?.originalURL || '',
             optimizedURL: photo?.src || '',
             isVideo: photo?.isVideo,
+            id: photo?.id,
           };
         });
 
@@ -193,10 +195,23 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
           const blob = await response.blob();
           const contentType = blob.type;
           const extension = contentType.startsWith('video/') ? 'mp4' : 'jpeg';
-          zip.file(
-            `${index === photos.length - 1 ? 'Portada' : index + 1}.${extension}`,
-            blob
-          );
+
+          let fileName;
+          switch (true) {
+            case index === photos.length - 1:
+              fileName = 'Portada';
+              break;
+            case index + 1 < 10:
+              fileName = `00${index + 1}`;
+              break;
+            case index + 1 < 100:
+              fileName = `0${index + 1}`;
+              break;
+            default:
+              fileName = `${index + 1}`;
+          }
+
+          zip.file(`${fileName}.${extension}`, blob);
         } catch (error) {
           console.error('Error fetching image or video:', error);
         }

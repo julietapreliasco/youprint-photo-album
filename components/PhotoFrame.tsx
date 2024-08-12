@@ -22,6 +22,7 @@ const PhotoFrame = React.memo(
         number,
         onLoad,
         photoAlbumStatus,
+        isAuthenticated,
       } = props;
       const { alt, style, ...restImageProps } = imageProps;
 
@@ -80,7 +81,7 @@ const PhotoFrame = React.memo(
                 Portada
               </p>
             )}
-            {loaded && !(active === undefined) && (
+            {!isAuthenticated && loaded && !(active === undefined) && (
               <>
                 <p className="absolute bottom-3 left-2 rounded text-xs font-bold text-white drop-shadow-2xl sm:left-3 sm:text-sm lg:bottom-4 lg:left-4 lg:text-base xl:text-lg">
                   {number && !isCover ? number : null}

@@ -9,6 +9,7 @@ export type PhotoFrameProps = SortablePhotoProps & {
   isCover?: boolean;
   isVideo?: boolean;
   number?: number;
+  isAuthenticated?: boolean;
   onLoad?: () => void;
   photoAlbumStatus?: boolean;
 };
@@ -28,6 +29,7 @@ export interface ExtendedPhoto extends Photo {
 }
 
 export interface PhotoAlbumPhotos {
+  id?: string;
   _id?: string;
   originalURL: string;
   optimizedURL: string;

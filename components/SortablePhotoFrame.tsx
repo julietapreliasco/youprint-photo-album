@@ -7,9 +7,10 @@ function SortablePhotoFrame(
     activeIndex?: number;
     photoAlbumStatus?: boolean;
     isVideo?: boolean;
+    isAuthenticated?: boolean;
   }
 ) {
-  const { photo, activeIndex, photoAlbumStatus } = props;
+  const { photo, activeIndex, photoAlbumStatus, isAuthenticated } = props;
   const { attributes, listeners, isDragging, index, over, setNodeRef } =
     useSortable({ id: photo.id });
 
@@ -32,6 +33,7 @@ function SortablePhotoFrame(
       listeners={listeners}
       photoAlbumStatus={photoAlbumStatus}
       isVideo={photo.isVideo}
+      isAuthenticated={isAuthenticated}
       {...props}
     />
   );
