@@ -47,6 +47,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
   const [photoAlbumStatus, setPhotoAlbumStatus] = useState<boolean | undefined>(
     undefined
   );
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [client, setClient] = useState<{ name?: string; phone: string }>({
     name: '',
     phone: '',
@@ -185,14 +186,39 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     );
   };
 
-  const handleDownload = async () => {
+  const fetchWithRetry = async (
+    url: string,
+    retries = 5
+  ): Promise<Blob | null> => {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Failed to fetch ${url}`);
+        return await response.blob();
+      } catch (error) {
+        console.error(`Attempt ${attempt} failed to fetch ${url}:`, error);
+        if (attempt === retries) return null;
+      }
+    }
+    return null;
+  };
+
+  const handleDownload = async (
+    photos: ExtendedPhoto[],
+    client: { name?: string; phone: string }
+  ) => {
     const zip = new JSZip();
 
     try {
+      setIsDownloading(true);
       const fetchPromises = photos.map(async (photo, index) => {
         try {
-          const response = await fetch(photo.originalURL);
-          const blob = await response.blob();
+          const blob = await fetchWithRetry(photo.originalURL);
+          if (!blob)
+            throw new Error(
+              `Failed to fetch ${photo.originalURL} after ${5} attempts`
+            );
+
           const contentType = blob.type;
           const extension = contentType.startsWith('video/') ? 'mp4' : 'jpeg';
 
@@ -213,7 +239,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
 
           zip.file(`${fileName}.${extension}`, blob);
         } catch (error) {
-          console.error('Error fetching image or video:', error);
+          console.error('Error processing photo:', error);
         }
       });
 
@@ -223,6 +249,8 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
       saveAs(content, `${client.name ?? client.phone}_photo_album.zip`);
     } catch (error) {
       console.error('Error generating zip:', error);
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -257,9 +285,10 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
                   {isAuthenticated && (
                     <div className="flex w-full justify-end">
                       <Button
-                        onClick={handleDownload}
-                        variant="SECONDARY"
+                        onClick={() => handleDownload(photos, client)}
+                        variant={isDownloading ? 'DISABLED' : 'SECONDARY'}
                         message={'Descargar'}
+                        disabled={isDownloading}
                       />
                     </div>
                   )}
