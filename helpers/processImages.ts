@@ -22,7 +22,7 @@ const uploadImage = async (
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
       const result = await cloudinary.uploader.upload(url, {
-        quality: 'auto: low',
+        quality: 20,
         fetch_format: 'auto',
         format: 'webp',
         folder: 'photo-albums',
@@ -45,7 +45,7 @@ const generateThumbnail = async (
     try {
       const result = await cloudinary.uploader.upload(url, {
         resource_type: 'video',
-        eager: [{ format: 'webp', quality: 'auto:low' }],
+        eager: [{ format: 'webp', quality: 20 }],
         eager_async: false,
       });
       return result.eager[0].secure_url;

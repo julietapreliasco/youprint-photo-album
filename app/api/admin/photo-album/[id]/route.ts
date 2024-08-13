@@ -45,7 +45,7 @@ export async function PUT(
 
     const uploadPromises = newPhotos.map((originalURL: string) =>
       cloudinary.uploader.upload(originalURL, {
-        quality: 'auto: low',
+        quality: 20,
         fetch_format: 'auto',
         format: 'webp',
         folder: 'photo-albums',
