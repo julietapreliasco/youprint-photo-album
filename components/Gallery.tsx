@@ -312,7 +312,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
                 spacing={15}
                 padding={1}
               />
-              {!isLoadingMorePhotos && (
+              {!isLoadingMorePhotos && photoAlbumStatus && (
                 <div className="mt-5 flex w-full flex-col items-end">
                   <div className="items-end">
                     <div className="flex items-end justify-end gap-2">
