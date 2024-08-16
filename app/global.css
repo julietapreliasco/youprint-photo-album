@@ -22,6 +22,7 @@ body {
     rgb(0 0 0 / 14%) 0 3px 4px 0,
     rgb(0 0 0 / 12%) 0 1px 8px 0;
   touch-action: manipulation;
+  -webkit-touch-callout: none;
 }
 
 .react-photo-album {

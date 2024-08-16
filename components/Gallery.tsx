@@ -109,6 +109,23 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
     albumData,
   ]);
 
+  useEffect(() => {
+    const handleContextMenu = (e: Event) => {
+      e.preventDefault();
+    };
+
+    const photoFrames = document.querySelectorAll('.photo-frame');
+    photoFrames.forEach((frame) => {
+      frame.addEventListener('contextmenu', handleContextMenu);
+    });
+
+    return () => {
+      photoFrames.forEach((frame) => {
+        frame.removeEventListener('contextmenu', handleContextMenu);
+      });
+    };
+  }, []);
+
   const [activeId, setActiveId] = useState<UniqueIdentifier>();
   const activeIndex = activeId
     ? photos.findIndex((photo) => photo.id === activeId)
@@ -312,7 +329,7 @@ export const Gallery: React.FC<GalleryProps> = ({ id }) => {
                 spacing={15}
                 padding={1}
               />
-              {!isLoadingMorePhotos && (
+              {!isLoadingMorePhotos && photoAlbumStatus && (
                 <div className="mt-5 flex w-full flex-col items-end">
                   <div className="items-end">
                     <div className="flex items-end justify-end gap-2">
