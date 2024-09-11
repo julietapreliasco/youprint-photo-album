@@ -22,7 +22,7 @@ const uploadImage = async (
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
       const result = await cloudinary.uploader.upload(url, {
-        quality: 20,
+        quality: 'auto:good',
         fetch_format: 'auto',
         format: 'webp',
         folder: 'photo-albums',
