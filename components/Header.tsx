@@ -8,8 +8,8 @@ export const Header = () => {
 
   const title =
     isAuthenticated || pathname === '/login'
-      ? 'Gestion de Fotolibros'
-      : 'Ordena tu Fotolibro';
+      ? 'Gestión de fotos'
+      : 'Ordena tus fotos';
 
   return (
     <header className="flex max-w-full items-center justify-between bg-slate-100 px-5 py-4 text-3xl md:px-16">
