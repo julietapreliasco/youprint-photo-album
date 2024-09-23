@@ -78,7 +78,7 @@ const PhotoFrame = React.memo(
               loading={isCover ? 'eager' : 'lazy'}
               onContextMenu={(e) => e.preventDefault()}
             />
-            {isCover && loaded && (
+            {isCover && loaded && !isAuthenticated && (
               <p className="absolute bottom-3 left-2 max-w-full truncate rounded bg-black bg-opacity-70 px-1 py-0.5 text-[20px] text-white sm:left-3 sm:px-2 sm:py-1 lg:bottom-4 lg:left-4">
                 Portada
               </p>
